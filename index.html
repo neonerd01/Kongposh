@@ -1,1 +1,308 @@
-<!-- your full updated file content goes here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KONGPOSH — Handmade Crafts, Embroidery, Crochet & Jewellery</title>
+<meta name="description" content="KONGPOSH — premium handmade embroidery, crochet, resin jewellery, calligraphy and custom gifts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+  <div class="wrap header-row">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2c-3 3-3 6 0 9s3 6 0 9M3 12h18"/></svg>
+      </span>
+      <span class="logo-text">KONG<em>POSH</em></span>
+    </a>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html">Home</a>
+      <a href="embroidery.html">Embroidery</a>
+      <a href="#" aria-disabled="true">Crochet</a>
+      <a href="#" aria-disabled="true">Jewellery</a>
+      <a href="#" aria-disabled="true">Calligraphy</a>
+      <a href="#about">About</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="Search">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      </button>
+      <button class="icon-btn" id="cart-toggle" aria-label="Open cart">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap hero-row">
+    <div class="hero-copy">
+      <p class="eyebrow">Handmade · Kashmiri Craftsmanship</p>
+      <h1>Crafted by hand,<br>made to be treasured.</h1>
+      <p class="hero-sub">KONGPOSH brings you embroidery, crochet, resin jewellery, calligraphy and custom keepsakes — every piece made by hand, one at a time.</p>
+      <div class="hero-cta">
+        <a href="embroidery.html" class="btn btn-primary">Shop Embroidery</a>
+        <a href="#featured-categories" class="btn btn-ghost">Explore Categories</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-frame">
+        <img class="img-placeholder-img" src="emb-hoodie1.jpeg" alt="KONGPOSH embroidered hoodie" style="width:100%;height:100%;object-fit:cover;border-radius:3px;">
+      </div>
+      <div class="hero-badge">
+        <span class="badge-num">100%</span>
+        <span class="badge-label">Handmade</span>
+      </div>
+    </div>
+  </div>
+  <div class="wrap thread-divider">
+    <svg viewBox="0 0 1180 22" preserveAspectRatio="none"><path d="M0 11 Q 100 0 200 11 T 400 11 T 600 11 T 800 11 T 1000 11 T 1180 11" stroke="currentColor" fill="none" stroke-width="1.4"/></svg>
+  </div>
+</section>
+
+<!-- ================= FEATURED CATEGORIES ================= -->
+<section class="banners" id="featured-categories">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow eyebrow-light">Shop by Category</p>
+      <h2>Our Craft Collections</h2>
+    </div>
+    <div class="banner-grid">
+      <a href="embroidery.html" class="banner-card">
+        <img class="banner-img" src="emb-hoops1.jpeg" alt="Embroidery collection" style="width:100%;height:100%;object-fit:cover;">
+        <div class="banner-copy">
+          <h3>Embroidery</h3>
+          <span class="banner-link">Hoops, hoodies, tees & more →</span>
+        </div>
+      </a>
+      <a href="#" class="banner-card">
+        <div class="img-placeholder banner-img" data-label="Crochet — coming soon"></div>
+        <div class="banner-copy">
+          <h3>Crochet</h3>
+          <span class="banner-link">Coming soon →</span>
+        </div>
+      </a>
+      <a href="#" class="banner-card">
+        <div class="img-placeholder banner-img" data-label="Jewellery — coming soon"></div>
+        <div class="banner-copy">
+          <h3>Jewellery</h3>
+          <span class="banner-link">Coming soon →</span>
+        </div>
+      </a>
+      <a href="#" class="banner-card">
+        <div class="img-placeholder banner-img" data-label="Calligraphy — coming soon"></div>
+        <div class="banner-copy">
+          <h3>Calligraphy</h3>
+          <span class="banner-link">Coming soon →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BEST SELLERS / EMBROIDERY PREVIEW ================= -->
+<section class="shop">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Fresh From The Hoop</p>
+      <h2>Best Selling Embroidery</h2>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="tab active" data-filter="all" aria-selected="true">All</button>
+      <button class="tab" data-filter="embroidery" aria-selected="false">Embroidery</button>
+    </div>
+
+    <div class="product-grid">
+      <div class="product-card" data-category="embroidery">
+        <div class="card-media">
+          <img src="emb-hoops1.jpeg" alt="Embroidery Hoop" style="width:100%;height:100%;object-fit:cover;">
+          <span class="tag tag-gold">Best Seller</span>
+        </div>
+        <div class="card-body">
+          <h3>Embroidery Hoop</h3>
+          <p class="card-desc">Hand-stitched hoop art, made to order.</p>
+          <div class="card-foot">
+            <span class="price">$18</span>
+            <button class="btn-add" data-name="Embroidery Hoop" data-price="18">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="embroidery">
+        <div class="card-media">
+          <img src="emb-hoodie1.jpeg" alt="Embroidered Hoodie" style="width:100%;height:100%;object-fit:cover;">
+          <span class="tag tag-gold">New</span>
+        </div>
+        <div class="card-body">
+          <h3>Embroidered Hoodie</h3>
+          <p class="card-desc">Custom embroidered design on a soft hoodie.</p>
+          <div class="card-foot">
+            <span class="price">$42</span>
+            <button class="btn-add" data-name="Embroidered Hoodie" data-price="42">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="embroidery">
+        <div class="card-media">
+          <img src="emb-tshirt1.jpeg" alt="Embroidered T-Shirt" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+        <div class="card-body">
+          <h3>Embroidered T-Shirt</h3>
+          <p class="card-desc">Hand-embroidered tee, made to order.</p>
+          <div class="card-foot">
+            <span class="price">$28</span>
+            <button class="btn-add" data-name="Embroidered T-Shirt" data-price="28">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="embroidery">
+        <div class="card-media">
+          <img src="emb-handkerchief1.jpeg" alt="Embroidered Handkerchief" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+        <div class="card-body">
+          <h3>Embroidered Handkerchief</h3>
+          <p class="card-desc">Delicate hand-embroidered handkerchief.</p>
+          <div class="card-foot">
+            <span class="price">$9</span>
+            <button class="btn-add" data-name="Embroidered Handkerchief" data-price="9">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="story" id="about">
+  <div class="wrap story-row">
+    <div class="story-visual">
+      <img class="img-placeholder-img" src="emb-hoodie2.jpeg" alt="Our craft" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:3px;">
+    </div>
+    <div class="story-copy">
+      <p class="eyebrow">Our Story</p>
+      <h2>Every stitch, hand-made with care.</h2>
+      <p>KONGPOSH started as a small home studio, turning thread, resin, yarn and ink into pieces people keep for years — not seasons. Every hoop, hoodie, and handkerchief is stitched by hand, and every custom order is made just for you.</p>
+      <a href="#" class="btn btn-ghost">Learn More</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REVIEWS ================= -->
+<section class="shop">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Customer Love</p>
+      <h2>What People Are Saying</h2>
+    </div>
+    <div class="product-grid">
+      <div class="product-card">
+        <div class="card-body">
+          <h3>★★★★★</h3>
+          <p class="card-desc">"The embroidery detail is incredible — you can tell it's made with real care."</p>
+          <p class="card-desc" style="margin:0;font-weight:600;">— Aisha R.</p>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="card-body">
+          <h3>★★★★★</h3>
+          <p class="card-desc">"My custom hoodie came out exactly how I imagined. Ordering again."</p>
+          <p class="card-desc" style="margin:0;font-weight:600;">— Zara K.</p>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="card-body">
+          <h3>★★★★★</h3>
+          <p class="card-desc">"Beautiful packaging and even more beautiful craftsmanship."</p>
+          <p class="card-desc" style="margin:0;font-weight:600;">— Fatima S.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NEWSLETTER ================= -->
+<section class="newsletter">
+  <div class="wrap newsletter-row">
+    <div>
+      <h2>Join the KONGPOSH circle</h2>
+      <p>New drops, custom order slots, and behind-the-scenes — straight to your inbox.</p>
+    </div>
+    <form class="newsletter-form" id="newsletter-form">
+      <input type="email" placeholder="Your email address" required>
+      <button type="submit" class="btn btn-primary">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <span class="logo-text">KONG<em>POSH</em></span>
+      <p>Handmade embroidery, crochet, resin jewellery, calligraphy and custom keepsakes — crafted with care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <a href="embroidery.html">Embroidery</a>
+      <a href="#">Crochet</a>
+      <a href="#">Jewellery</a>
+      <a href="#">Calligraphy</a>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <a href="#">Shipping</a>
+      <a href="#">Returns</a>
+      <a href="#">Contact Us</a>
+      <a href="#">Custom Orders</a>
+    </div>
+    <div class="footer-col">
+      <h4>Follow</h4>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">WhatsApp</a>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    &copy; <span id="year"></span> KONGPOSH. All rights reserved.
+  </div>
+</footer>
+
+<!-- ================= CART DRAWER ================= -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-drawer" id="cart-drawer" aria-hidden="true">
+  <div class="cart-drawer-head">
+    <h3>Your Bag</h3>
+    <button class="icon-btn" id="cart-close" aria-label="Close cart">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <p class="cart-empty" id="cart-empty">Your bag is empty.</p>
+  </div>
+  <div class="cart-drawer-foot">
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span id="cart-total">$0</span>
+    </div>
+    <button class="btn btn-primary btn-block" id="checkout-btn">Checkout</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
