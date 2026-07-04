@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resin Gift Preservation — KONGPOSH</title>
+<meta name="description" content="Resin-preserved keepsakes and gifts from KONGPOSH.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+  <div class="wrap header-row">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2c-3 3-3 6 0 9s3 6 0 9M3 12h18"/></svg>
+      </span>
+      <span class="logo-text">KONG<em>POSH</em></span>
+    </a>
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html">Home</a>
+      <a href="embroidery.html">Embroidery</a>
+      <a href="crochet.html">Crochet</a>
+      <a href="jewellery.html">Jewellery</a>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-more-toggle">More</a>
+        <div class="nav-dropdown-menu">
+          <a href="ribbon.html">Ribbon Art</a>
+          <a href="calligraphy.html">Calligraphy</a>
+          <a href="birthday-gifts.html">Birthday Gifts</a>
+          <a href="resin-gift-preservation.html">Resin Preservation</a>
+          <a href="car-hangings.html">Car Hangings</a>
+          <a href="#" aria-disabled="true">Nikkah Dupatta (soon)</a>
+        </div>
+      </div>
+      <a href="index.html#about">About</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="Search">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      </button>
+      <button class="icon-btn" id="cart-toggle" aria-label="Open cart">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= PAGE HEADER ================= -->
+<section class="hero" style="padding: 48px 0 0;">
+  <div class="wrap">
+    <p class="eyebrow">Category</p>
+    <h1 style="font-size: clamp(1.9rem, 4vw, 2.8rem);">Resin Gift Preservation</h1>
+    <p class="hero-sub">Flowers, notes and small keepsakes cast in resin — a lasting way to preserve something meaningful.</p>
+  </div>
+</section>
+
+<!-- ================= PRODUCT GRID ================= -->
+<section class="shop">
+  <div class="wrap">
+    <p class="card-desc" style="max-width:640px;margin:0 0 24px;">These are reference designs from past orders — every piece is made fresh to order. Some designs have more than one photo — use the arrows to see other angles or colors. Pick a design you like and tell us how you'd like yours made.</p>
+    <div class="product-grid">
+      <div class="product-card">
+        <div class="card-media"><img src="rasin-gift1.jpeg" alt="Resin Gift Preservation — Design 1" style="width:100%;height:100%;object-fit:cover;"><span class="tag tag-gold">Best Seller</span></div>
+        <div class="card-body"><h3>Resin Gift Preservation — Design 1</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $28</span><button class="btn-add" onclick="chooseDesign('Resin Gift Preservation — Design 1','Resin Gift Preservation')">Choose This Design</button></div></div>
+      </div>
+
+      <div class="product-card">
+        <div class="card-media"><img src="rasin-giftpreservation1.jpeg" alt="Resin Gift Preservation — Design 2" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Gift Preservation — Design 2</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $28</span><button class="btn-add" onclick="chooseDesign('Resin Gift Preservation — Design 2','Resin Gift Preservation')">Choose This Design</button></div></div>
+      </div>
+
+      <div class="product-card">
+        <div class="card-media"><img src="rasin-giftpreservation2.jpeg" alt="Resin Gift Preservation — Design 3" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Gift Preservation — Design 3</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $28</span><button class="btn-add" onclick="chooseDesign('Resin Gift Preservation — Design 3','Resin Gift Preservation')">Choose This Design</button></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CUSTOMIZE YOUR OWN ================= -->
+<section class="story" id="custom-order">
+  <div class="wrap story-row">
+    <div class="story-visual">
+      <img class="img-placeholder-img" src="rasin-giftpreservation1.jpeg" alt="Custom order" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:3px;">
+    </div>
+    <div class="story-copy">
+      <p class="eyebrow eyebrow-light">✨ Custom Order</p>
+      <h2>Preserve Your Own Keepsake</h2>
+      <p>Send us what you'd like preserved — flowers, a note, a small memento — and tell us your preferred shape and size.</p>
+      <form id="custom-resin-form" style="display:flex;flex-direction:column;gap:14px;max-width:420px;">
+        <label style="font-size:0.86rem;font-weight:600;">
+          Selected reference design
+          <input type="text" id="selected-design" placeholder="Pick a design above, or leave blank for a fully original piece" style="width:100%;margin-top:6px;padding:12px 16px;border-radius:8px;border:1px solid var(--line);font-family:inherit;">
+        </label>
+        <label style="font-size:0.86rem;font-weight:600;">
+          Product type
+          <select id="product-type" style="width:100%;margin-top:6px;padding:12px 16px;border-radius:8px;border:1px solid var(--line);font-family:inherit;">
+            <option value="Resin Gift Preservation">Resin Gift Preservation</option>
+          </select>
+        </label>
+        <label style="font-size:0.86rem;font-weight:600;">
+          Reference image (optional — upload your own if you'd like something different)
+          <input type="file" accept="image/*" style="display:block;margin-top:6px;">
+        </label>
+        <label style="font-size:0.86rem;font-weight:600;">
+          Notes / preferences
+          <input type="text" placeholder="colors, size, wording, etc." style="width:100%;margin-top:6px;padding:12px 16px;border-radius:8px;border:1px solid var(--line);font-family:inherit;">
+        </label>
+        <button type="submit" class="btn btn-primary">Submit Custom Request</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <span class="logo-text">KONG<em>POSH</em></span>
+      <p>Handmade embroidery, crochet, resin jewellery, calligraphy and custom keepsakes — crafted with care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <a href="embroidery.html">Embroidery</a>
+      <a href="crochet.html">Crochet</a>
+      <a href="jewellery.html">Jewellery</a>
+      <a href="ribbon.html">Ribbon Art</a>
+      <a href="calligraphy.html">Calligraphy</a>
+      <a href="birthday-gifts.html">Birthday Gifts</a>
+      <a href="resin-gift-preservation.html">Resin Gift Preservation</a>
+      <a href="car-hangings.html">Car Hangings</a>
+      <a href="#">Nikkah Dupatta</a>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <a href="#">Shipping</a>
+      <a href="#">Returns</a>
+      <a href="#">Contact Us</a>
+      <a href="#">Custom Orders</a>
+    </div>
+    <div class="footer-col">
+      <h4>Follow</h4>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">WhatsApp</a>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    &copy; <span id="year"></span> KONGPOSH. All rights reserved.
+  </div>
+</footer>
+
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-drawer" id="cart-drawer" aria-hidden="true">
+  <div class="cart-drawer-head">
+    <h3>Your Bag</h3>
+    <button class="icon-btn" id="cart-close" aria-label="Close cart">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <p class="cart-empty" id="cart-empty">Your bag is empty.</p>
+  </div>
+  <div class="cart-drawer-foot">
+    <div class="cart-total-row"><span>Total</span><span id="cart-total">$0</span></div>
+    <button class="btn btn-primary btn-block" id="checkout-btn">Checkout</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+
+<script>
+  function chooseDesign(designLabel, productType) {
+    document.getElementById('selected-design').value = designLabel;
+    document.getElementById('product-type').value = productType;
+    document.getElementById('custom-order').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const toast = document.getElementById('toast');
+    toast.textContent = `"${designLabel}" selected — tell us how you'd like yours made below.`;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  document.getElementById('custom-resin-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const toast = document.getElementById('toast');
+    toast.textContent = "Custom request received — we'll be in touch!";
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+    this.reset();
+  });
+</script>
+</body>
+</html>
