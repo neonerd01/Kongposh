@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mainNav.style.gap = '16px';
       }
     });
-    mainNav.querySelectorAll('a').forEach(link => {
+    mainNav.querySelectorAll('a:not(.nav-more-toggle)').forEach(link => {
       link.addEventListener('click', () => {
         hamburger.classList.remove('open');
         hamburger.setAttribute('aria-expanded', 'false');
@@ -32,6 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  /* ---------- "More" nav dropdown ---------- */
+  document.querySelectorAll('.nav-more-toggle').forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggle.parentElement.classList.toggle('open');
+    });
+  });
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.nav-dropdown.open').forEach(dropdown => {
+      if (!dropdown.contains(e.target)) dropdown.classList.remove('open');
+    });
+  });
 
   /* ---------- Product filtering ---------- */
   const tabs = document.querySelectorAll('.tab');
