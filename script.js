@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
   /* ---------- Footer year ---------- */
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -52,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ---------- Cart ---------- */
   let cart = []; // { name, price, qty }
-
   const cartCountEl = document.getElementById('cart-count');
   const cartItemsEl = document.getElementById('cart-items');
   const cartEmptyEl = document.getElementById('cart-empty');
@@ -70,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cartOverlay.classList.remove('open');
     cartDrawer.setAttribute('aria-hidden', 'true');
   }
-
   document.getElementById('cart-toggle').addEventListener('click', openCart);
   document.getElementById('cart-close').addEventListener('click', closeCart);
   cartOverlay.addEventListener('click', closeCart);
@@ -126,7 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  document.querySelectorAll('.btn-add').forEach(btn => {
+  // FIX: only wire up real "Add to cart" buttons (ones with data-name/data-price).
+  // "Choose This Design" buttons reuse the .btn-add class for styling only and
+  // have their own onclick="chooseDesign(...)" handler — without this filter,
+  // clicking them was also silently triggering a broken addToCart(undefined, NaN) call.
+  document.querySelectorAll('.btn-add[data-name]').forEach(btn => {
     btn.addEventListener('click', () => {
       const name = btn.dataset.name;
       const price = Number(btn.dataset.price);
@@ -164,3 +165,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderCart();
 });
+
+/* ---------- Product photo sliders (multiple photos of one design) ----------
+   Usage in HTML:
+   <div class="card-slider" id="slider-xyz">
+     <div class="slide active"><img src="..."></div>
+     <div class="slide"><img src="..."></div>
+     <button class="slider-arrow prev" onclick="moveSlide('slider-xyz',-1)">‹</button>
+     <button class="slider-arrow next" onclick="moveSlide('slider-xyz',1)">›</button>
+     <div class="slider-dots">
+       <button class="slider-dot active" onclick="goToSlide('slider-xyz',0)"></button>
+       <button class="slider-dot" onclick="goToSlide('slider-xyz',1)"></button>
+     </div>
+   </div>
+------------------------------------------------------------------------- */
+function moveSlide(sliderId, direction) {
+  const slider = document.getElementById(sliderId);
+  if (!slider) return;
+  const slides = slider.querySelectorAll('.slide');
+  const dots = slider.querySelectorAll('.slider-dot');
+  let idx = Array.from(slides).findIndex(s => s.classList.contains('active'));
+  if (idx === -1) idx = 0;
+  slides[idx].classList.remove('active');
+  if (dots[idx]) dots[idx].classList.remove('active');
+  idx = (idx + direction + slides.length) % slides.length;
+  slides[idx].classList.add('active');
+  if (dots[idx]) dots[idx].classList.add('active');
+}
+
+function goToSlide(sliderId, targetIdx) {
+  const slider = document.getElementById(sliderId);
+  if (!slider) return;
+  const slides = slider.querySelectorAll('.slide');
+  const dots = slider.querySelectorAll('.slider-dot');
+  slides.forEach(s => s.classList.remove('active'));
+  dots.forEach(d => d.classList.remove('active'));
+  if (slides[targetIdx]) slides[targetIdx].classList.add('active');
+  if (dots[targetIdx]) dots[targetIdx].classList.add('active');
+}
