@@ -1,22 +1,20 @@
 /* =========================================================
    Loop & Lustre — jewellery + crochet shop
    Tokens
-   ========================================================= */
+========================================================= */
 :root{
-  --linen:      #EFE7D8;   /* page background — undyed linen */
-  --linen-dark: #E4D9C4;   /* slightly deeper linen for alt sections */
-  --ink:        #2B2620;   /* primary text — warm near-black */
-  --ink-soft:   #6B6255;   /* secondary text */
-  --card:       #FBF8F2;   /* card surface */
-  --gold:       #B08D3F;   /* jewellery accent */
-  --gold-deep:  #8B6F30;
-  --rust:       #A64B3B;   /* yarn / crochet warm accent */
-  --sage:       #6B7A5E;   /* crochet cool accent */
-  --line:       rgba(43,38,32,0.14);
-
+  --linen: #EFE7D8;       /* page background — undyed linen */
+  --linen-dark: #E4D9C4;  /* slightly deeper linen for alt sections */
+  --ink: #2B2620;         /* primary text — warm near-black */
+  --ink-soft: #6B6255;    /* secondary text */
+  --card: #FBF8F2;        /* card surface */
+  --gold: #B08D3F;        /* jewellery accent */
+  --gold-deep: #8B6F30;
+  --rust: #A64B3B;        /* yarn / crochet warm accent */
+  --sage: #6B7A5E;        /* crochet cool accent */
+  --line: rgba(43,38,32,0.14);
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Jost", "Segoe UI", sans-serif;
-
   --radius: 3px;
   --container: 1180px;
 }
@@ -111,7 +109,7 @@ button{ font-family: inherit; cursor: pointer; }
 
 /* =========================================================
    Header
-   ========================================================= */
+========================================================= */
 .site-header{
   position: sticky; top:0; z-index: 50;
   background: rgba(239,231,216,0.92);
@@ -126,14 +124,12 @@ button{ font-family: inherit; cursor: pointer; }
 .logo-mark{ color: var(--gold-deep); display:flex; }
 .logo-text{ font-family: var(--font-display); font-size: 1.3rem; font-weight:600; }
 .logo-text em{ font-style: normal; color: var(--rust); }
-
 .main-nav{ display:flex; gap: 34px; }
 .main-nav a{
   font-size: 0.86rem; font-weight:500; color: var(--ink-soft);
   position: relative; padding: 4px 0;
 }
 .main-nav a:hover{ color: var(--ink); }
-
 .header-actions{ display:flex; align-items:center; gap: 6px; }
 .icon-btn{
   background:none; border:none; color: var(--ink);
@@ -150,7 +146,6 @@ button{ font-family: inherit; cursor: pointer; }
   display:flex; align-items:center; justify-content:center;
   padding: 0 3px;
 }
-
 .hamburger{
   display:none; background:none; border:none;
   width: 34px; height: 34px; flex-direction:column;
@@ -163,7 +158,7 @@ button{ font-family: inherit; cursor: pointer; }
 
 /* =========================================================
    Hero
-   ========================================================= */
+========================================================= */
 .hero{ padding: 72px 0 0; position: relative; }
 .hero-row{
   display:grid; grid-template-columns: 1.05fr 0.95fr;
@@ -172,7 +167,6 @@ button{ font-family: inherit; cursor: pointer; }
 .hero-copy h1{ font-size: clamp(2.1rem, 4vw, 3.2rem); }
 .hero-sub{ max-width: 46ch; font-size: 1.02rem; }
 .hero-cta{ display:flex; gap:14px; margin-top: 8px; flex-wrap:wrap; }
-
 .hero-visual{ position:relative; }
 .hero-frame{
   aspect-ratio: 4/5;
@@ -193,17 +187,15 @@ button{ font-family: inherit; cursor: pointer; }
 }
 .badge-num{ font-family: var(--font-display); font-size: 1.7rem; font-weight:600; }
 .badge-label{ font-size: 0.6rem; letter-spacing:0.05em; text-transform:uppercase; line-height:1.3; margin-top:2px; }
-
 .thread-divider{ color: var(--gold-deep); margin-top: 56px; opacity: .8; }
 .thread-divider svg{ width:100%; height: 22px; display:block; }
 
 /* =========================================================
    Shop / filters / grid
-   ========================================================= */
+========================================================= */
 .shop{ padding: 76px 0 40px; }
 .section-head{ text-align:center; margin-bottom: 34px; }
 .section-head h2{ font-size: clamp(1.6rem, 3vw, 2.2rem); }
-
 .filter-tabs{
   display:flex; justify-content:center; gap: 10px;
   margin-bottom: 42px; flex-wrap:wrap;
@@ -216,7 +208,6 @@ button{ font-family: inherit; cursor: pointer; }
 }
 .tab:hover{ border-color: var(--ink); color: var(--ink); }
 .tab.active{ background: var(--ink); color: var(--linen); border-color: var(--ink); }
-
 .product-grid{
   display:grid; grid-template-columns: repeat(3, 1fr); gap: 26px;
 }
@@ -238,7 +229,6 @@ button{ font-family: inherit; cursor: pointer; }
 }
 .tag-gold{ background: var(--gold-deep); }
 .tag-sage{ background: var(--sage); }
-
 .card-body{ padding: 18px 18px 20px; display:flex; flex-direction:column; gap:6px; flex:1; }
 .card-body h3{ font-size: 1.05rem; }
 .card-desc{ font-size: 0.86rem; flex:1; margin-bottom: 10px; }
@@ -252,12 +242,43 @@ button{ font-family: inherit; cursor: pointer; }
 }
 .btn-add:hover{ background: var(--ink); color: var(--linen); }
 .btn-add.added{ background: var(--sage); border-color: var(--sage); color:#fff; }
-
 .product-card.hidden{ display:none; }
 
 /* =========================================================
+   Card image slider (multiple photos of one design)
+========================================================= */
+.card-slider{ position:relative; width:100%; height:100%; }
+.card-slider .slide{
+  position:absolute; inset:0; opacity:0; visibility:hidden;
+  transition: opacity .25s ease;
+}
+.card-slider .slide.active{ opacity:1; visibility:visible; z-index:1; }
+.card-slider .slide img{ width:100%; height:100%; object-fit:cover; }
+.slider-arrow{
+  position:absolute; top:50%; transform:translateY(-50%);
+  background: rgba(251,248,242,0.9); border:1px solid var(--line);
+  width:26px; height:26px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; line-height:1; color: var(--ink);
+  z-index:5; padding:0;
+}
+.slider-arrow:hover{ background:#fff; }
+.slider-arrow.prev{ left:8px; }
+.slider-arrow.next{ right:8px; }
+.slider-dots{
+  position:absolute; bottom:8px; left:0; right:0;
+  display:flex; justify-content:center; gap:5px; z-index:5;
+}
+.slider-dot{
+  width:6px; height:6px; border-radius:50%;
+  background: rgba(255,255,255,0.65); border:1px solid rgba(43,38,32,0.2);
+  padding:0;
+}
+.slider-dot.active{ background:#fff; width:16px; border-radius:4px; }
+
+/* =========================================================
    Category banners
-   ========================================================= */
+========================================================= */
 .banners{ padding: 20px 0 80px; }
 .banner-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 26px; }
 .banner-card{
@@ -276,7 +297,7 @@ button{ font-family: inherit; cursor: pointer; }
 
 /* =========================================================
    Story
-   ========================================================= */
+========================================================= */
 .story{ padding: 20px 0 84px; }
 .story-row{ display:grid; grid-template-columns: 0.9fr 1.1fr; gap: 60px; align-items:center; }
 .story-visual .img-placeholder{ aspect-ratio: 4/3; min-height:0; }
@@ -285,7 +306,7 @@ button{ font-family: inherit; cursor: pointer; }
 
 /* =========================================================
    Newsletter
-   ========================================================= */
+========================================================= */
 .newsletter{ background: var(--ink); color: var(--linen); padding: 60px 0; }
 .newsletter-row{ display:flex; align-items:center; justify-content:space-between; gap: 30px; flex-wrap:wrap; }
 .newsletter h2{ color:#fff; font-size: 1.5rem; margin-bottom: 6px; }
@@ -301,7 +322,7 @@ button{ font-family: inherit; cursor: pointer; }
 
 /* =========================================================
    Footer
-   ========================================================= */
+========================================================= */
 .site-footer{ background: var(--linen-dark); padding: 56px 0 0; }
 .footer-grid{
   display:grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 30px;
@@ -315,7 +336,7 @@ button{ font-family: inherit; cursor: pointer; }
 
 /* =========================================================
    Cart drawer
-   ========================================================= */
+========================================================= */
 .cart-drawer{
   position: fixed; top:0; right:0; height:100vh; width: 380px; max-width: 88vw;
   background: var(--card); z-index: 200;
@@ -340,7 +361,6 @@ button{ font-family: inherit; cursor: pointer; }
 .cart-line-remove{ background:none; border:none; color: var(--rust); font-size: 0.76rem; font-weight:600; }
 .cart-drawer-foot{ padding: 18px 22px 24px; border-top: 1px solid var(--line); }
 .cart-total-row{ display:flex; justify-content:space-between; font-weight:700; margin-bottom: 14px; font-family: var(--font-display); font-size: 1.1rem; }
-
 .cart-overlay{
   position: fixed; inset:0; background: rgba(43,38,32,0.4);
   z-index: 190; opacity:0; visibility:hidden; transition: opacity .3s ease;
@@ -359,7 +379,7 @@ button{ font-family: inherit; cursor: pointer; }
 
 /* =========================================================
    Responsive
-   ========================================================= */
+========================================================= */
 @media (max-width: 900px){
   .main-nav{ display:none; }
   .hamburger{ display:flex; }
@@ -376,7 +396,6 @@ button{ font-family: inherit; cursor: pointer; }
   .newsletter-row{ flex-direction:column; align-items:flex-start; }
   .hero-badge{ left:auto; right: 10px; }
 }
-
 @media (prefers-reduced-motion: reduce){
   *{ transition: none !important; scroll-behavior: auto !important; }
 }
