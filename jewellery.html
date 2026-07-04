@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jewellery — KONGPOSH</title>
+<meta name="description" content="Handmade resin jewellery — jhumkas, pendants, jhumka pendant sets and bridal sets from KONGPOSH.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+  <div class="wrap header-row">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2c-3 3-3 6 0 9s3 6 0 9M3 12h18"/></svg>
+      </span>
+      <span class="logo-text">KONG<em>POSH</em></span>
+    </a>
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html">Home</a>
+      <a href="embroidery.html">Embroidery</a>
+      <a href="#" aria-disabled="true">Crochet</a>
+      <a href="jewellery.html">Jewellery</a>
+      <a href="#" aria-disabled="true">Calligraphy</a>
+      <a href="index.html#about">About</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="Search">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      </button>
+      <button class="icon-btn" id="cart-toggle" aria-label="Open cart">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= PAGE HEADER ================= -->
+<section class="hero" style="padding: 48px 0 0;">
+  <div class="wrap">
+    <p class="eyebrow">Category</p>
+    <h1 style="font-size: clamp(1.9rem, 4vw, 2.8rem);">Jewellery</h1>
+    <p class="hero-sub">Handmade resin jewellery — jhumkas, pendants, jhumka pendant sets and bridal sets, each one cast and finished by hand.</p>
+  </div>
+</section>
+
+<!-- ================= SUBCATEGORY FILTER + GRID ================= -->
+<section class="shop">
+  <div class="wrap">
+    <p class="card-desc" style="max-width:640px;margin:0 0 24px;">These are reference designs from past orders — every piece is made fresh to order. Pick a design you like and tell us how you'd like yours made.</p>
+    <div class="filter-tabs">
+      <button class="tab active" data-filter="all" aria-selected="true">All</button>
+      <button class="tab" data-filter="bridal" aria-selected="false">Bridal Sets</button>
+      <button class="tab" data-filter="jhumkas" aria-selected="false">Jhumkas</button>
+      <button class="tab" data-filter="jhumka-pendant-set" aria-selected="false">Jhumka Pendant Set</button>
+      <button class="tab" data-filter="pendants" aria-selected="false">Pendants</button>
+      <button class="tab" data-filter="bangles" aria-selected="false">Bangles</button>
+      <button class="tab" data-filter="rings" aria-selected="false">Rings</button>
+      <button class="tab" data-filter="bracelets" aria-selected="false">Bracelets</button>
+    </div>
+
+    <div class="product-grid">
+
+      <!-- Bridal Sets -->
+      <div class="product-card" data-category="bridal">
+        <div class="card-media"><img src="jew-bridal1.jpeg" alt="Resin Bridal Set 1" style="width:100%;height:100%;object-fit:cover;"><span class="tag tag-gold">Reference Design</span></div>
+        <div class="card-body"><h3>Resin Bridal Set — Design 1</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $85</span><button class="btn-add" onclick="chooseDesign('Resin Bridal Set — Design 1','Bridal Set')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="bridal">
+        <div class="card-media"><img src="jew-bridal2.jpeg" alt="Resin Bridal Set 2" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Bridal Set — Design 2</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $85</span><button class="btn-add" onclick="chooseDesign('Resin Bridal Set — Design 2','Bridal Set')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="bridal">
+        <div class="card-media"><img src="jew-bridal3.jpeg" alt="Resin Bridal Set 3" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Bridal Set — Design 3</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $85</span><button class="btn-add" onclick="chooseDesign('Resin Bridal Set — Design 3','Bridal Set')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="bridal">
+        <div class="card-media"><img src="jew-bridal4.jpeg" alt="Resin Bridal Set 4" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Bridal Set — Design 4</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $85</span><button class="btn-add" onclick="chooseDesign('Resin Bridal Set — Design 4','Bridal Set')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="bridal">
+        <div class="card-media"><img src="jew-bridal5.jpeg" alt="Resin Bridal Set 5" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Bridal Set — Design 5</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $85</span><button class="btn-add" onclick="chooseDesign('Resin Bridal Set — Design 5','Bridal Set')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="bridal">
+        <div class="card-media"><img src="jew-bridal-6.jpeg" alt="Resin Bridal Set 6" style="width:100%;height:100%;object-fit:cover;"><span class="tag tag-gold">New</span></div>
+        <div class="card-body"><h3>Resin Bridal Set — Design 6</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $85</span><button class="btn-add" onclick="chooseDesign('Resin Bridal Set — Design 6','Bridal Set')">Choose This Design</button></div></div>
+      </div>
+
+      <!-- Jhumkas -->
+      <div class="product-card" data-category="jhumkas">
+        <div class="card-media"><img src="jew-jhumke1.jpeg" alt="Resin Jhumka 1" style="width:100%;height:100%;object-fit:cover;"><span class="tag tag-gold">Best Seller</span></div>
+        <div class="card-body"><h3>Resin Jhumka — Design 1</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $22</span><button class="btn-add" onclick="chooseDesign('Resin Jhumka — Design 1','Jhumka')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="jhumkas">
+        <div class="card-media"><img src="jew-jhumke2.jpeg" alt="Resin Jhumka 2" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Jhumka — Design 2</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $22</span><button class="btn-add" onclick="chooseDesign('Resin Jhumka — Design 2','Jhumka')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="jhumkas">
+        <div class="card-media"><img src="jew-jhumke3.jpeg" alt="Resin Jhumka 3" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Jhumka — Design 3</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $22</span><button class="btn-add" onclick="chooseDesign('Resin Jhumka — Design 3','Jhumka')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="jhumkas">
+        <div class="card-media"><img src="jew-jhumke4.jpeg" alt="Resin Jhumka 4" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Jhumka — Design 4</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $22</span><button class="btn-add" onclick="chooseDesign('Resin Jhumka — Design 4','Jhumka')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="jhumkas">
+        <div class="card-media"><img src="jew-jhumke5.jpeg" alt="Resin Jhumka 5" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Jhumka — Design 5</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $22</span><button class="btn-add" onclick="chooseDesign('Resin Jhumka — Design 5','Jhumka')">Choose This Design</button></div></div>
+      </div>
+
+      <!-- Jhumka Pendant Set (new subcategory) -->
+      <div class="product-card" data-category="jhumka-pendant-set">
+        <div class="card-media"><img src="jew-jhumke-pendant1.jpeg" alt="Jhumka Pendant Set 1" style="width:100%;height:100%;object-fit:cover;"><span class="tag tag-gold">New</span></div>
+        <div class="card-body"><h3>Jhumka Pendant Set — Design 1</h3><p class="card-desc">Matching jhumka and pendant, shown as a made example.</p>
+          <div class="card-foot"><span class="price">From $30</span><button class="btn-add" onclick="chooseDesign('Jhumka Pendant Set — Design 1','Jhumka Pendant Set')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="jhumka-pendant-set">
+        <div class="card-media"><img src="jew-jhumke-pendant2.jpeg" alt="Jhumka Pendant Set 2" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Jhumka Pendant Set — Design 2</h3><p class="card-desc">Matching jhumka and pendant, shown as a made example.</p>
+          <div class="card-foot"><span class="price">From $30</span><button class="btn-add" onclick="chooseDesign('Jhumka Pendant Set — Design 2','Jhumka Pendant Set')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="jhumka-pendant-set">
+        <div class="card-media"><img src="jew-jhumke-pendant-3.jpeg" alt="Jhumka Pendant Set 3" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Jhumka Pendant Set — Design 3</h3><p class="card-desc">Matching jhumka and pendant, shown as a made example.</p>
+          <div class="card-foot"><span class="price">From $30</span><button class="btn-add" onclick="chooseDesign('Jhumka Pendant Set — Design 3','Jhumka Pendant Set')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="jhumka-pendant-set">
+        <div class="card-media"><img src="jew-jhumke-pendant4.jpeg" alt="Jhumka Pendant Set 4" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Jhumka Pendant Set — Design 4</h3><p class="card-desc">Matching jhumka and pendant, shown as a made example.</p>
+          <div class="card-foot"><span class="price">From $30</span><button class="btn-add" onclick="chooseDesign('Jhumka Pendant Set — Design 4','Jhumka Pendant Set')">Choose This Design</button></div></div>
+      </div>
+
+      <!-- Pendants -->
+      <div class="product-card" data-category="pendants">
+        <div class="card-media"><img src="jew-pendant1.jpeg" alt="Resin Pendant 1" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Pendant — Design 1</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $15</span><button class="btn-add" onclick="chooseDesign('Resin Pendant — Design 1','Pendant')">Choose This Design</button></div></div>
+      </div>
+      <div class="product-card" data-category="pendants">
+        <div class="card-media"><img src="jew-pendant2.jpeg" alt="Resin Pendant 2" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="card-body"><h3>Resin Pendant — Design 2</h3><p class="card-desc">Shown as a made example — yours will be made fresh for you.</p>
+          <div class="card-foot"><span class="price">From $15</span><button class="btn-add" onclick="chooseDesign('Resin Pendant — Design 2','Pendant')">Choose This Design</button></div></div>
+      </div>
+
+      <!-- Bangles (awaiting images) -->
+      <div class="product-card" data-category="bangles">
+        <div class="card-media"><div class="img-placeholder" data-label="Resin Bangle — add image"></div></div>
+        <div class="card-body"><h3>Resin Bangle</h3><p class="card-desc">Made to order — photos coming soon.</p>
+          <div class="card-foot"><span class="price">From $20</span><button class="btn-add" onclick="chooseDesign('Resin Bangle','Bangle')">Choose This Design</button></div></div>
+      </div>
+
+      <!-- Rings (awaiting images) -->
+      <div class="product-card" data-category="rings">
+        <div class="card-media"><div class="img-placeholder" data-label="Resin Ring — add image"></div></div>
+        <div class="card-body"><h3>Resin Ring</h3><p class="card-desc">Made to order — photos coming soon.</p>
+          <div class="card-foot"><span class="price">From $18</span><button class="btn-add" onclick="chooseDesign('Resin Ring','Ring')">Choose This Design</button></div></div>
+      </div>
+
+      <!-- Bracelets (awaiting images) -->
+      <div class="product-card" data-category="bracelets">
+        <div class="card-media"><div class="img-placeholder" data-label="Resin Bracelet — add image"></div></div>
+        <div class="card-body"><h3>Resin Bracelet</h3><p class="card-desc">Made to order — photos coming soon.</p>
+          <div class="card-foot"><span class="price">From $16</span><button class="btn-add" onclick="chooseDesign('Resin Bracelet','Bracelet')">Choose This Design</button></div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= CUSTOMIZE YOUR OWN ================= -->
+<section class="story" id="custom-order">
+  <div class="wrap story-row">
+    <div class="story-visual">
+      <img class="img-placeholder-img" src="jew-jhumke-pendant1.jpeg" alt="Custom jewellery" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:3px;">
+    </div>
+    <div class="story-copy">
+      <p class="eyebrow eyebrow-light">✨ Custom Order</p>
+      <h2>Customize Your Own Jewellery</h2>
+      <p>Pick a reference design, tell us your colors and any special details, and we'll cast it fresh for you.</p>
+      <form id="custom-jewellery-form" style="display:flex;flex-direction:column;gap:14px;max-width:420px;">
+        <label style="font-size:0.86rem;font-weight:600;">
+          Selected reference design
+          <input type="text" id="selected-design" placeholder="Pick a design above, or leave blank for a fully original piece" style="width:100%;margin-top:6px;padding:12px 16px;border-radius:8px;border:1px solid var(--line);font-family:inherit;">
+        </label>
+        <label style="font-size:0.86rem;font-weight:600;">
+          Product type
+          <select id="product-type" style="width:100%;margin-top:6px;padding:12px 16px;border-radius:8px;border:1px solid var(--line);font-family:inherit;">
+            <option value="Bridal Set">Bridal Set</option>
+            <option value="Jhumka">Jhumka</option>
+            <option value="Jhumka Pendant Set">Jhumka Pendant Set</option>
+            <option value="Pendant">Pendant</option>
+            <option value="Bangle">Bangle</option>
+            <option value="Ring">Ring</option>
+            <option value="Bracelet">Bracelet</option>
+          </select>
+        </label>
+        <label style="font-size:0.86rem;font-weight:600;">
+          Reference image (optional — upload your own if you'd like something different)
+          <input type="file" accept="image/*" style="display:block;margin-top:6px;">
+        </label>
+        <label style="font-size:0.86rem;font-weight:600;">
+          Preferred colors / stones
+          <input type="text" placeholder="e.g. maroon and gold, pearl accents" style="width:100%;margin-top:6px;padding:12px 16px;border-radius:8px;border:1px solid var(--line);font-family:inherit;">
+        </label>
+        <button type="submit" class="btn btn-primary">Submit Custom Request</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <span class="logo-text">KONG<em>POSH</em></span>
+      <p>Handmade embroidery, crochet, resin jewellery, calligraphy and custom keepsakes — crafted with care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <a href="embroidery.html">Embroidery</a>
+      <a href="#">Crochet</a>
+      <a href="jewellery.html">Jewellery</a>
+      <a href="#">Calligraphy</a>
+      <a href="#">Birthday Gifts</a>
+      <a href="#">Resin Gift Preservation</a>
+      <a href="#">Ribbon Art</a>
+      <a href="#">Nikkah Dupatta</a>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <a href="#">Shipping</a>
+      <a href="#">Returns</a>
+      <a href="#">Contact Us</a>
+      <a href="#">Custom Orders</a>
+    </div>
+    <div class="footer-col">
+      <h4>Follow</h4>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">WhatsApp</a>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    &copy; <span id="year"></span> KONGPOSH. All rights reserved.
+  </div>
+</footer>
+
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-drawer" id="cart-drawer" aria-hidden="true">
+  <div class="cart-drawer-head">
+    <h3>Your Bag</h3>
+    <button class="icon-btn" id="cart-close" aria-label="Close cart">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <p class="cart-empty" id="cart-empty">Your bag is empty.</p>
+  </div>
+  <div class="cart-drawer-foot">
+    <div class="cart-total-row"><span>Total</span><span id="cart-total">$0</span></div>
+    <button class="btn btn-primary btn-block" id="checkout-btn">Checkout</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+<script>
+  function chooseDesign(designLabel, productType) {
+    document.getElementById('selected-design').value = designLabel;
+    document.getElementById('product-type').value = productType;
+    document.getElementById('custom-order').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const toast = document.getElementById('toast');
+    toast.textContent = `"${designLabel}" selected — tell us how you'd like yours made below.`;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  document.getElementById('custom-jewellery-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const toast = document.getElementById('toast');
+    toast.textContent = "Custom request received — we'll be in touch!";
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+    this.reset();
+  });
+</script>
+</body>
+</html>
