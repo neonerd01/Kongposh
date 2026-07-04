@@ -179,6 +179,66 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCart();
 });
 
+/* ---------- Scroll reveal ---------- */
+(function () {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const revealEls = document.querySelectorAll('.reveal');
+  if (!revealEls.length) return;
+  if (prefersReduced || !('IntersectionObserver' in window)) {
+    revealEls.forEach(el => el.classList.add('reveal-visible'));
+    return;
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('reveal-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+})();
+
+/* ---------- Animated stat counters ---------- */
+(function () {
+  const stats = document.querySelectorAll('.stat-num[data-count-to]');
+  if (!stats.length || !('IntersectionObserver' in window)) return;
+  const animateCount = (el) => {
+    const target = parseInt(el.dataset.countTo, 10);
+    const suffix = el.dataset.suffix || '';
+    const duration = 1200;
+    const start = performance.now();
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      el.textContent = Math.floor(progress * target) + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = target + suffix;
+    }
+    requestAnimationFrame(tick);
+  };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  stats.forEach(el => observer.observe(el));
+})();
+
+/* ---------- FAQ accordion ---------- */
+document.querySelectorAll('.faq-question').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item.open').forEach(openItem => {
+      if (openItem !== item) openItem.classList.remove('open');
+    });
+    item.classList.toggle('open', !wasOpen);
+  });
+});
+
 /* ---------- Product photo sliders (multiple photos of one design) ----------
    Usage in HTML:
    <div class="card-slider" id="slider-xyz">
