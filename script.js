@@ -80,6 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function slugify(name, page) {
     return (page + '::' + name).toLowerCase().replace(/[^a-z0-9]+/g, '-');
   }
+  // Just the filename (e.g. "embroidery.html"), never the full path — so ids
+  // stay identical whether the site is hosted at the domain root or in a
+  // subfolder (e.g. GitHub Pages project sites like /Kongposh/embroidery.html).
+  function currentPageFile() {
+    const parts = location.pathname.split('/').filter(Boolean);
+    return parts.length ? parts[parts.length - 1] : 'index.html';
+  }
   function parsePrice(text) {
     const match = (text || '').match(/[\d.]+/);
     return match ? parseFloat(match[0]) : 0;
@@ -424,13 +431,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const priceText = priceEl.textContent.trim();
     const descEl = card.querySelector('.card-desc');
     const allImgs = Array.from(card.querySelectorAll('.card-media img')).map(el => el.getAttribute('src'));
+    const pageFile = currentPageFile();
     const item = {
-      id: slugify(name, location.pathname),
+      id: slugify(name, pageFile),
       name,
       priceText,
       price: parsePrice(priceText),
       img: imgEl ? imgEl.getAttribute('src') : '',
-      page: location.pathname,
+      page: pageFile,
     };
 
     // "Customizable" badge — every KONGPOSH piece is made to order. Skip if a page
