@@ -399,6 +399,12 @@ document.addEventListener('DOMContentLoaded', () => {
     qvListBtn.addEventListener('click', () => addToOrderList(item, qvListBtn));
     actionsEl.appendChild(qvListBtn);
 
+    const qvDetailsLink = document.createElement('a');
+    qvDetailsLink.className = 'btn btn-ghost';
+    qvDetailsLink.textContent = 'View Full Details';
+    qvDetailsLink.href = `product.html?id=${encodeURIComponent(item.id)}`;
+    actionsEl.appendChild(qvDetailsLink);
+
     qvOverlay.classList.add('open');
     qvModal.classList.add('open');
     qvModal.setAttribute('aria-hidden', 'false');
@@ -458,6 +464,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
     media.appendChild(qvBtn);
 
+    // "View Details" link — sends the shopper to the full product.html page for this design.
+    // Injected generically like everything else above, so no per-page HTML edits are needed.
+    if (descEl && !card.querySelector('.view-details-link')) {
+      const detailsLink = document.createElement('a');
+      detailsLink.className = 'view-details-link';
+      detailsLink.href = `product.html?id=${encodeURIComponent(item.id)}`;
+      detailsLink.textContent = 'View Full Details →';
+      descEl.insertAdjacentElement('afterend', detailsLink);
+    }
+
     const listBtn = document.createElement('button');
     listBtn.className = 'btn-list-add';
     listBtn.type = 'button';
@@ -467,9 +483,33 @@ document.addEventListener('DOMContentLoaded', () => {
     foot.appendChild(listBtn);
   });
 
+  /* ---------- Cross-page "Customize This Design" handoff ----------
+     product.html's Customize button links to
+     <category-page>.html?design=NAME&type=TYPE#custom-order — this
+     picks those query params up on load and pre-fills the form,
+     the same way chooseDesign() does when clicking a card directly. */
+  (function prefillFromQueryParams() {
+    const params = new URLSearchParams(location.search);
+    const design = params.get('design');
+    const type = params.get('type');
+    const designInput = document.getElementById('selected-design');
+    const typeSelect = document.getElementById('product-type');
+    if (!design && !type) return;
+    if (designInput && design) designInput.value = design;
+    if (typeSelect && type) typeSelect.value = type;
+    if (designInput || typeSelect) {
+      showToast(design ? `"${design}" selected — tell us how you'd like yours made below.` : 'Tell us how you\'d like yours made below.');
+    }
+  })();
+
   syncWishButtons();
   renderWishlist();
   renderCart();
+
+  /* ---------- Expose shared helpers for product.html's own script ----------
+     product-page.js (loaded after this file) calls these so wishlist/order-list
+     behavior — storage, ids, toasts, header counts — stays identical everywhere. */
+  window.KP = { addToOrderList, toggleWishlist, showToast };
 });
 
 /* ---------- Scroll reveal ---------- */
