@@ -93,6 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const match = filter === 'all' || card.dataset.category === filter;
         card.classList.toggle('hidden', !match);
       });
+      // Keep the new filter sidebar (if present) in sync with the horizontal tabs
+      document.querySelectorAll('.filter-sidebar-item').forEach(b => b.classList.remove('active'));
     });
   });
 
@@ -642,6 +644,145 @@ document.addEventListener('DOMContentLoaded', () => {
     foot.appendChild(listBtn);
   });
 
+  /* ---------- Category page extras: breadcrumb + filter sidebar + related categories ----------
+     Runs generically on any of the 9 category pages, detected by filename —
+     no per-page HTML edits needed, same pattern as everything else above. */
+  (function buildCategoryPageExtras() {
+    const CATEGORY_PAGES = {
+      'embroidery.html':              { label: 'Embroidery',              img: 'emb-hoops1.jpeg' },
+      'crochet.html':                 { label: 'Crochet',                 img: 'cro-accessories.jpeg' },
+      'jewellery.html':               { label: 'Jewellery',               img: 'jew-bridal1.jpeg' },
+      'ribbon.html':                  { label: 'Ribbon Art',              img: 'ribbon-1.jpeg' },
+      'birthday-gifts.html':          { label: 'Birthday Gifts',          img: 'birthday1.jpeg' },
+      'resin-gift-preservation.html': { label: 'Resin Gift Preservation', img: 'rasin-gift1.jpeg' },
+      'calligraphy.html':             { label: 'Calligraphy',             img: 'calli-name1.jpeg' },
+      'car-hangings.html':            { label: 'Car Hangings',            img: 'car-hanging1.jpeg' },
+      'nikkah-dupatta.html':          { label: 'Nikkah Dupatta',          img: 'nikkah-dupatta1.jpeg' },
+    };
+
+    const pageFile = currentPageFile();
+    const current = CATEGORY_PAGES[pageFile];
+    const shopSection = document.querySelector('.shop');
+    if (!current || !shopSection) return; // only runs on the 9 category pages
+
+    const wrap = shopSection.querySelector(':scope > .wrap');
+    const sectionHead = shopSection.querySelector('.section-head');
+    const filterTabsEl = shopSection.querySelector('.filter-tabs');
+    const productGrid = shopSection.querySelector('.product-grid');
+    if (!wrap || !productGrid) return;
+
+    /* ---- Breadcrumb ---- */
+    const breadcrumbWrap = document.createElement('div');
+    breadcrumbWrap.className = 'wrap category-breadcrumb';
+    breadcrumbWrap.innerHTML = `
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="crumb-sep">/</span>
+        <a href="index.html">Shop</a>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-current">${current.label}</span>
+      </nav>
+    `;
+    shopSection.insertBefore(breadcrumbWrap, wrap);
+
+    /* ---- Filter sidebar + main column ---- */
+    const shopLayout = document.createElement('div');
+    shopLayout.className = 'shop-layout';
+
+    const mainCol = document.createElement('div');
+    mainCol.className = 'shop-main';
+    if (sectionHead) mainCol.appendChild(sectionHead);
+    if (filterTabsEl) mainCol.appendChild(filterTabsEl);
+    mainCol.appendChild(productGrid);
+
+    const aside = document.createElement('aside');
+    aside.className = 'filter-sidebar';
+    aside.innerHTML = `
+      <h4>Refine by Type</h4>
+      <div class="filter-sidebar-group" id="filter-sidebar-cats"></div>
+    `;
+
+    shopLayout.appendChild(aside);
+    shopLayout.appendChild(mainCol);
+    wrap.appendChild(shopLayout);
+
+    function populateSidebar() {
+      const products = (window.KONGPOSH_PRODUCTS || []).filter(p => p.page === pageFile);
+      if (!products.length) return;
+      const counts = {};
+      const labels = {};
+      products.forEach(p => {
+        counts[p.category] = (counts[p.category] || 0) + 1;
+        labels[p.category] = p.type;
+      });
+      const group = aside.querySelector('#filter-sidebar-cats');
+      const allCards = productGrid.querySelectorAll('.product-card');
+
+      Object.keys(counts).forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-sidebar-item';
+        btn.type = 'button';
+        btn.dataset.filter = cat;
+        btn.innerHTML = `<span>${labels[cat] || cat}</span><span class="filter-sidebar-count">${counts[cat]}</span>`;
+        btn.addEventListener('click', () => {
+          const alreadyActive = btn.classList.contains('active');
+          aside.querySelectorAll('.filter-sidebar-item').forEach(b => b.classList.remove('active'));
+          tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+          if (alreadyActive) {
+            allCards.forEach(card => card.classList.remove('hidden'));
+            const allTab = shopSection.querySelector('.tab[data-filter="all"]');
+            if (allTab) { allTab.classList.add('active'); allTab.setAttribute('aria-selected', 'true'); }
+            return;
+          }
+          btn.classList.add('active');
+          allCards.forEach(card => card.classList.toggle('hidden', card.dataset.category !== cat));
+        });
+        group.appendChild(btn);
+      });
+
+      const clearBtn = document.createElement('button');
+      clearBtn.className = 'filter-sidebar-clear';
+      clearBtn.type = 'button';
+      clearBtn.textContent = 'Clear filters';
+      clearBtn.addEventListener('click', () => {
+        aside.querySelectorAll('.filter-sidebar-item').forEach(b => b.classList.remove('active'));
+        allCards.forEach(card => card.classList.remove('hidden'));
+        const allTab = shopSection.querySelector('.tab[data-filter="all"]');
+        if (allTab) { allTab.click(); }
+      });
+      aside.appendChild(clearBtn);
+    }
+
+    if (window.KONGPOSH_PRODUCTS) {
+      populateSidebar();
+    } else {
+      ensureProductsData().then(populateSidebar).catch(() => { /* sidebar simply stays empty */ });
+    }
+
+    /* ---- Related categories ---- */
+    const relatedSection = document.createElement('section');
+    relatedSection.className = 'related-categories';
+    const relatedWrap = document.createElement('div');
+    relatedWrap.className = 'wrap';
+    const otherPages = Object.keys(CATEGORY_PAGES).filter(f => f !== pageFile).slice(0, 4);
+    relatedWrap.innerHTML = `
+      <div class="section-head">
+        <p class="eyebrow">Explore More</p>
+        <h2>You Might Also Like</h2>
+      </div>
+      <div class="related-cat-grid">
+        ${otherPages.map(f => `
+          <a class="related-cat-card" href="${f}">
+            <img src="${CATEGORY_PAGES[f].img}" alt="${CATEGORY_PAGES[f].label}" loading="lazy">
+            <div class="related-cat-copy"><h4>${CATEGORY_PAGES[f].label}</h4></div>
+          </a>
+        `).join('')}
+      </div>
+    `;
+    relatedSection.appendChild(relatedWrap);
+    shopSection.parentElement.insertBefore(relatedSection, shopSection.nextSibling);
+  })();
+
   /* ---------- Cross-page "Customize This Design" handoff ----------
      product.html's Customize button links to
      <category-page>.html?design=NAME&type=TYPE#custom-order — this
@@ -768,3 +909,143 @@ function goToSlide(sliderId, targetIdx) {
   if (slides[targetIdx]) slides[targetIdx].classList.add('active');
   if (dots[targetIdx]) dots[targetIdx].classList.add('active');
 }
+
+/* =========================================================
+   Polish: image lazy-load + skeleton, click-to-zoom lightbox, button ripple
+========================================================= */
+
+/* Lazy-load + shimmer skeleton for product/gallery images. Hero/logo images
+   are left alone so above-the-fold content still loads immediately. */
+(function setupImageLazyAndSkeleton() {
+  const targets = document.querySelectorAll(
+    '.card-media img, .banner-img img, .related-cat-card img, .pd-main-img img, .pd-thumbs img, .story-visual img, .qv-main-img img'
+  );
+  targets.forEach(img => {
+    if (!img.hasAttribute('loading')) img.loading = 'lazy';
+    const wrap = img.closest('.card-media, .banner-img, .related-cat-card, .pd-main-img, .story-visual, .qv-main-img') || img.parentElement;
+    if (wrap && !wrap.classList.contains('img-skeleton-wrap')) wrap.classList.add('img-skeleton-wrap');
+    const markLoaded = () => {
+      img.classList.add('img-loaded');
+      if (wrap) wrap.classList.add('img-ready');
+    };
+    if (img.complete && img.naturalWidth > 0) markLoaded();
+    else {
+      img.addEventListener('load', markLoaded);
+      img.addEventListener('error', markLoaded);
+    }
+  });
+
+  // Product cards / gallery images get injected dynamically after this runs
+  // (wishlist buttons, quick view, category extras) — catch those too via a
+  // lightweight observer so newly-added <img>s still get lazy+skeleton treatment.
+  const mo = new MutationObserver((mutations) => {
+    mutations.forEach(m => {
+      m.addedNodes.forEach(node => {
+        if (node.nodeType !== 1) return;
+        const imgs = node.matches && node.matches('img') ? [node] : (node.querySelectorAll ? Array.from(node.querySelectorAll('img')) : []);
+        imgs.forEach(img => {
+          if (img.dataset.skeletonBound) return;
+          img.dataset.skeletonBound = '1';
+          if (!img.hasAttribute('loading')) img.loading = 'lazy';
+          const wrap = img.parentElement;
+          if (wrap) wrap.classList.add('img-skeleton-wrap');
+          const markLoaded = () => { img.classList.add('img-loaded'); if (wrap) wrap.classList.add('img-ready'); };
+          if (img.complete && img.naturalWidth > 0) markLoaded();
+          else { img.addEventListener('load', markLoaded); img.addEventListener('error', markLoaded); }
+        });
+      });
+    });
+  });
+  mo.observe(document.body, { childList: true, subtree: true });
+})();
+
+/* Click-to-zoom lightbox with pinch-zoom (touch) + scroll-zoom (desktop) for
+   product detail and quick-view main images. */
+(function setupZoomLightbox() {
+  const lightbox = document.createElement('div');
+  lightbox.className = 'zoom-lightbox';
+  lightbox.innerHTML = `
+    <button class="zoom-lightbox-close" type="button" aria-label="Close zoom">✕</button>
+    <img src="" alt="">
+    <span class="zoom-lightbox-hint">Scroll or pinch to zoom · drag to pan · double-click to reset</span>
+  `;
+  document.body.appendChild(lightbox);
+  const imgEl = lightbox.querySelector('img');
+  let scale = 1, panX = 0, panY = 0;
+
+  function applyTransform() {
+    imgEl.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+  }
+  function resetZoom() { scale = 1; panX = 0; panY = 0; applyTransform(); }
+  function openLightbox(src, alt) {
+    if (!src) return;
+    imgEl.src = src;
+    imgEl.alt = alt || '';
+    resetZoom();
+    lightbox.classList.add('open');
+  }
+  function closeLightbox() { lightbox.classList.remove('open'); }
+
+  lightbox.querySelector('.zoom-lightbox-close').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+  // Desktop: scroll wheel to zoom
+  lightbox.addEventListener('wheel', (e) => {
+    if (!lightbox.classList.contains('open')) return;
+    e.preventDefault();
+    scale = Math.min(4, Math.max(1, scale - e.deltaY * 0.0016));
+    applyTransform();
+  }, { passive: false });
+
+  // Touch: pinch to zoom, one-finger drag to pan
+  let touchState = null;
+  function touchDist(t1, t2) { return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY); }
+  lightbox.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      touchState = { startDist: touchDist(e.touches[0], e.touches[1]), startScale: scale };
+    } else if (e.touches.length === 1) {
+      touchState = { startX: e.touches[0].clientX - panX, startY: e.touches[0].clientY - panY };
+    }
+  }, { passive: true });
+  lightbox.addEventListener('touchmove', (e) => {
+    if (!touchState) return;
+    if (e.touches.length === 2 && touchState.startDist) {
+      const newDist = touchDist(e.touches[0], e.touches[1]);
+      scale = Math.min(4, Math.max(1, touchState.startScale * (newDist / touchState.startDist)));
+      applyTransform();
+    } else if (e.touches.length === 1 && touchState.startX !== undefined) {
+      panX = e.touches[0].clientX - touchState.startX;
+      panY = e.touches[0].clientY - touchState.startY;
+      applyTransform();
+    }
+  }, { passive: true });
+  lightbox.addEventListener('touchend', () => { touchState = null; });
+
+  imgEl.addEventListener('dblclick', resetZoom);
+
+  // Hook up to every main gallery image, including ones injected later
+  // (product.html gallery, quick view modal)
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('.pd-main-img img, .qv-main-img img');
+    if (target) openLightbox(target.src, target.alt);
+  });
+})();
+
+/* Button ripple effect on primary interactive controls */
+(function setupRipple() {
+  const selector = '.btn, .btn-add, .btn-list-add, .tab, .cb-chip, .filter-sidebar-item';
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest(selector);
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    btn.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+  });
+})();
