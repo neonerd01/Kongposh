@@ -567,3 +567,61 @@ button{ font-family: inherit; cursor: pointer; }
 @media (max-width: 560px){
   .trust-grid{ grid-template-columns: 1fr; }
 }
+
+/* =========================================================
+   Product Detail Page (product.html) + "View Details" link
+========================================================= */
+
+/* Breadcrumb */
+.breadcrumb{ font-size: 0.82rem; color: var(--ink-soft); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.breadcrumb a{ color: var(--ink-soft); }
+.breadcrumb a:hover{ color: var(--ink); }
+.crumb-sep{ opacity: 0.5; }
+.crumb-current{ color: var(--ink); font-weight: 600; }
+
+/* "View Full Details" link injected into every card body */
+.view-details-link{
+  display: inline-block;
+  font-size: 0.78rem; font-weight: 700; letter-spacing:0.01em;
+  color: var(--gold-deep); margin: -4px 0 8px;
+}
+.view-details-link:hover{ color: var(--rust); text-decoration: underline; }
+
+/* Product detail layout */
+.pd-section{ padding: 28px 0 20px; }
+.pd-layout{
+  display:grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items:start;
+}
+.pd-gallery{ position: sticky; top: 100px; }
+.pd-main-img{
+  position: relative; aspect-ratio: 1/1; border-radius: var(--radius);
+  overflow:hidden; background: var(--card); border: 1px solid var(--line);
+}
+.pd-main-img img{ width:100%; height:100%; object-fit:cover; }
+.pd-thumbs{ display:flex; gap:10px; padding-top:12px; flex-wrap:wrap; }
+.pd-thumbs img{
+  width:64px; height:64px; object-fit:cover; border-radius:8px; cursor:pointer;
+  border:2px solid transparent; opacity:0.75; transition: all .18s ease;
+}
+.pd-thumbs img:hover{ opacity:1; }
+.pd-thumbs img.active{ border-color: var(--gold-deep); opacity:1; }
+
+.pd-info{ padding-top: 4px; }
+.pd-info h1{ margin-bottom: 10px; }
+.pd-info .price{ font-family: var(--font-display); font-weight:600; margin-bottom: 14px; }
+.pd-info .card-desc{ font-size: 0.95rem; max-width: 46ch; }
+
+.pd-meta-list{
+  display:flex; flex-direction:column; gap: 10px;
+  margin: 20px 0 26px; padding: 18px 20px;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.pd-meta-item{ font-size: 0.84rem; color: var(--ink-soft); }
+
+.pd-actions{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.pd-actions .btn-list-add{ padding: 12px 20px; }
+
+@media (max-width: 900px){
+  .pd-layout{ grid-template-columns: 1fr; gap: 30px; }
+  .pd-gallery{ position: static; }
+}
