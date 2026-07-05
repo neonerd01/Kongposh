@@ -122,3 +122,12 @@ function kpGetRelated(product, limit) {
   });
   return result;
 }
+
+// Top-level `const`/`let` do NOT create properties on `window` the way `var` does —
+// explicitly attach here so any code checking `window.KONGPOSH_PRODUCTS` (e.g. the
+// lazy-loaded search overlay in script.js) sees it as soon as this file has run.
+if (typeof window !== 'undefined') {
+  window.KONGPOSH_PRODUCTS = KONGPOSH_PRODUCTS;
+  window.kpGetProductById = kpGetProductById;
+  window.kpGetRelated = kpGetRelated;
+}
