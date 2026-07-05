@@ -1,4 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
+  /* ---------- Simplified nav rebuild ----------
+     Runs first, before hamburger/dropdown binding code below, so those bind to
+     the NEW nav. Replaces the old flat per-page nav markup with: Home / Shop /
+     Custom Orders / About / Contact / More — site-wide, from this one file. */
+  (function rebuildMainNav() {
+    const mainNavEl = document.getElementById('main-nav');
+    if (!mainNavEl) return;
+    mainNavEl.innerHTML = `
+      <a href="index.html">Home</a>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-more-toggle">Shop ▾</a>
+        <div class="nav-dropdown-menu" id="nav-shop-menu">
+          <a href="embroidery.html">Embroidery</a>
+          <a href="crochet.html">Crochet</a>
+          <a href="jewellery.html">Jewellery</a>
+          <a href="ribbon.html">Ribbon Art</a>
+          <a href="index.html">View All Categories</a>
+        </div>
+      </div>
+      <a href="custom-builder.html">Custom Orders</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-more-toggle">More ▾</a>
+        <div class="nav-dropdown-menu" id="nav-more-menu">
+          <a href="faq.html">FAQ</a>
+          <a href="blog.html">Blog</a>
+          <a href="shipping-returns.html">Shipping &amp; Returns</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+        </div>
+      </div>
+    `;
+  })();
+
   /* ---------- Footer year ---------- */
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -447,31 +481,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  /* ---------- "Build Your Own" + info-page nav links ----------
-     Injected generically into every page's "More" dropdown, same pattern as the
-     Customizable badge — no per-page HTML edits needed. Skipped per-link if a page
-     already has it (e.g. if added manually later). */
-  const navExtraLinks = [
-    { href: 'custom-builder.html', label: '✨ Build Your Own', bold: true },
-    { href: 'contact.html', label: 'Contact' },
-    { href: 'faq.html', label: 'FAQ' },
-    { href: 'blog.html', label: 'Blog' },
-  ];
-  document.querySelectorAll('.nav-dropdown-menu').forEach(menu => {
-    navExtraLinks.forEach(({ href, label, bold }) => {
-      if (menu.querySelector(`a[href="${href}"]`)) return;
-      const link = document.createElement('a');
-      link.href = href;
-      link.textContent = label;
-      if (bold) {
-        link.style.fontWeight = '700';
-        menu.insertBefore(link, menu.firstChild);
-      } else {
-        menu.appendChild(link);
-      }
-    });
-  });
 
   /* ---------- Quick View modal (built once, reused for every card) ---------- */
   const qvOverlay = document.createElement('div');
