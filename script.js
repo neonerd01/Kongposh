@@ -448,17 +448,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ---------- "Build Your Own" nav link ----------
+  /* ---------- "Build Your Own" + info-page nav links ----------
      Injected generically into every page's "More" dropdown, same pattern as the
-     Customizable badge — no per-page HTML edits needed. Skipped if a page already
-     has it (e.g. if added manually later). */
+     Customizable badge — no per-page HTML edits needed. Skipped per-link if a page
+     already has it (e.g. if added manually later). */
+  const navExtraLinks = [
+    { href: 'custom-builder.html', label: '✨ Build Your Own', bold: true },
+    { href: 'contact.html', label: 'Contact' },
+    { href: 'faq.html', label: 'FAQ' },
+    { href: 'blog.html', label: 'Blog' },
+  ];
   document.querySelectorAll('.nav-dropdown-menu').forEach(menu => {
-    if (menu.querySelector('a[href="custom-builder.html"]')) return;
-    const link = document.createElement('a');
-    link.href = 'custom-builder.html';
-    link.textContent = '✨ Build Your Own';
-    link.style.fontWeight = '700';
-    menu.insertBefore(link, menu.firstChild);
+    navExtraLinks.forEach(({ href, label, bold }) => {
+      if (menu.querySelector(`a[href="${href}"]`)) return;
+      const link = document.createElement('a');
+      link.href = href;
+      link.textContent = label;
+      if (bold) {
+        link.style.fontWeight = '700';
+        menu.insertBefore(link, menu.firstChild);
+      } else {
+        menu.appendChild(link);
+      }
+    });
   });
 
   /* ---------- Quick View modal (built once, reused for every card) ---------- */
