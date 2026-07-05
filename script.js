@@ -92,6 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return match ? parseFloat(match[0]) : 0;
   }
 
+  // TODO: replace with your real WhatsApp number (country code + number, no + or spaces)
+  // Shared across the order-list checkout AND the Custom Product Builder's "Send via WhatsApp Now".
+  const WHATSAPP_NUMBER = '910000000000';
+
   /* ---------- Custom Order List (replaces traditional cart — every piece here is made to order, not fixed stock) ---------- */
   let orderList = loadItems(ORDER_LIST_KEY);
   const cartCountEl = document.getElementById('cart-count');
@@ -128,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${item.img ? `<img class="cart-line-img" src="${item.img}" alt="">` : ''}
           <div class="cart-line-body">
             <div class="cart-line-name">${item.name}</div>
-            <div class="cart-line-qty">${item.priceText || ''}</div>
+            <div class="cart-line-qty">${item.priceText || ''}${item.builderDetails ? ' · full details go in your WhatsApp message' : ''}</div>
           </div>
           <button class="cart-line-remove" data-id="${item.id}">Remove</button>
         `;
@@ -189,8 +193,14 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     // TODO: replace with your real WhatsApp number (country code + number, no + or spaces)
-    const WHATSAPP_NUMBER = '910000000000';
-    const lines = orderList.map((item, i) => `${i + 1}. ${item.name} (${item.priceText || 'price on request'})`);
+    const lines = orderList.map((item, i) => {
+      const header = `${i + 1}. ${item.name} (${item.priceText || 'price on request'})`;
+      if (item.builderDetails && item.builderDetails.length) {
+        const indented = item.builderDetails.map(l => `    - ${l}`).join('\n');
+        return `${header}\n${indented}`;
+      }
+      return header;
+    });
     const message = `Hi KONGPOSH! I'd like to start a custom order for:\n\n${lines.join('\n')}\n\nPlease let me know the next steps.`;
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
@@ -330,6 +340,126 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(added > 0 ? `${added} design(s) added to your Custom Order List` : 'Already in your Custom Order List');
     });
   }
+
+  /* ---------- Site Search ----------
+     Works from every page via the existing header search icon. products-data.js
+     is NOT loaded on category pages by default (only product.html needs it), so
+     this lazy-loads it on first use rather than requiring every page's <script>
+     tags to be edited. */
+  let productsDataPromise = null;
+  function ensureProductsData() {
+    if (window.KONGPOSH_PRODUCTS) return Promise.resolve();
+    if (productsDataPromise) return productsDataPromise;
+    productsDataPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'products-data.js';
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error('Could not load product data'));
+      document.head.appendChild(s);
+    });
+    return productsDataPromise;
+  }
+
+  const searchOverlay = document.createElement('div');
+  searchOverlay.className = 'qv-overlay';
+  searchOverlay.id = 'search-overlay';
+  const searchModal = document.createElement('div');
+  searchModal.className = 'search-modal';
+  searchModal.id = 'search-modal';
+  searchModal.setAttribute('aria-hidden', 'true');
+  searchModal.innerHTML = `
+    <div class="search-modal-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <input type="text" id="search-input" placeholder="Search embroidery, crochet, jewellery…" autocomplete="off" disabled>
+      <button class="icon-btn" id="search-close" aria-label="Close search">✕</button>
+    </div>
+    <div class="search-results" id="search-results">
+      <p class="cart-empty">Start typing to search every design across KONGPOSH.</p>
+    </div>
+  `;
+  document.body.appendChild(searchOverlay);
+  document.body.appendChild(searchModal);
+
+  function openSearch() {
+    searchOverlay.classList.add('open');
+    searchModal.classList.add('open');
+    searchModal.setAttribute('aria-hidden', 'false');
+    const input = document.getElementById('search-input');
+    const resultsEl = document.getElementById('search-results');
+    resultsEl.innerHTML = '<p class="cart-empty">Loading designs…</p>';
+    ensureProductsData().then(() => {
+      resultsEl.innerHTML = '<p class="cart-empty">Start typing to search every design across KONGPOSH.</p>';
+      input.disabled = false;
+      input.focus();
+    }).catch(() => {
+      resultsEl.innerHTML = '<p class="cart-empty">Search is temporarily unavailable — please browse a category instead.</p>';
+    });
+  }
+  function closeSearch() {
+    searchOverlay.classList.remove('open');
+    searchModal.classList.remove('open');
+    searchModal.setAttribute('aria-hidden', 'true');
+  }
+  function renderSearchResults(query) {
+    const resultsEl = document.getElementById('search-results');
+    const products = window.KONGPOSH_PRODUCTS || [];
+    if (!query.trim()) {
+      resultsEl.innerHTML = '<p class="cart-empty">Start typing to search every design across KONGPOSH.</p>';
+      return;
+    }
+    const q = query.trim().toLowerCase();
+    const matches = products.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.type.toLowerCase().includes(q) ||
+      p.pageLabel.toLowerCase().includes(q) ||
+      (p.category || '').toLowerCase().includes(q)
+    ).slice(0, 12);
+    if (!matches.length) {
+      resultsEl.innerHTML = `<p class="cart-empty">No designs matched "${query}" — try a category name like "crochet" or "jhumka".</p>`;
+      return;
+    }
+    resultsEl.innerHTML = matches.map(p => {
+      const img = (p.images && p.images[0]) || '';
+      return `
+        <a class="search-result-item" href="product.html?id=${encodeURIComponent(p.id)}">
+          ${img ? `<img src="${img}" alt="">` : `<div class="search-result-noimg"></div>`}
+          <div class="search-result-body">
+            <div class="search-result-name">${p.name}</div>
+            <div class="search-result-meta">${p.pageLabel} · ${p.priceText}</div>
+          </div>
+        </a>`;
+    }).join('');
+  }
+
+  const searchToggleBtn = document.querySelector('.icon-btn[aria-label="Search"]');
+  if (searchToggleBtn) {
+    searchToggleBtn.addEventListener('click', openSearch);
+    searchOverlay.addEventListener('click', closeSearch);
+    searchModal.querySelector('#search-close').addEventListener('click', closeSearch);
+    searchModal.querySelector('#search-input').addEventListener('input', (e) => renderSearchResults(e.target.value));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSearch();
+      // Quick keyboard shortcut: "/" opens search, unless typing in a field already
+      if (e.key === '/' && !searchModal.classList.contains('open') &&
+          !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        openSearch();
+      }
+    });
+  }
+
+  /* ---------- "Build Your Own" nav link ----------
+     Injected generically into every page's "More" dropdown, same pattern as the
+     Customizable badge — no per-page HTML edits needed. Skipped if a page already
+     has it (e.g. if added manually later). */
+  document.querySelectorAll('.nav-dropdown-menu').forEach(menu => {
+    if (menu.querySelector('a[href="custom-builder.html"]')) return;
+    const link = document.createElement('a');
+    link.href = 'custom-builder.html';
+    link.textContent = '✨ Build Your Own';
+    link.style.fontWeight = '700';
+    menu.insertBefore(link, menu.firstChild);
+  });
 
   /* ---------- Quick View modal (built once, reused for every card) ---------- */
   const qvOverlay = document.createElement('div');
@@ -517,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------- Expose shared helpers for product.html's own script ----------
      product-page.js (loaded after this file) calls these so wishlist/order-list
      behavior — storage, ids, toasts, header counts — stays identical everywhere. */
-  window.KP = { addToOrderList, toggleWishlist, showToast };
+  window.KP = { addToOrderList, toggleWishlist, showToast, WHATSAPP_NUMBER, ensureProductsData };
 });
 
 /* ---------- Scroll reveal ---------- */
