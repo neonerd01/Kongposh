@@ -324,6 +324,86 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ---------- Quick View modal (built once, reused for every card) ---------- */
+  const qvOverlay = document.createElement('div');
+  qvOverlay.className = 'qv-overlay';
+  qvOverlay.id = 'qv-overlay';
+  const qvModal = document.createElement('div');
+  qvModal.className = 'qv-modal';
+  qvModal.id = 'qv-modal';
+  qvModal.setAttribute('aria-hidden', 'true');
+  qvModal.innerHTML = `
+    <button class="icon-btn qv-close" id="qv-close" aria-label="Close quick view">✕</button>
+    <div class="qv-body">
+      <div class="qv-gallery">
+        <div class="qv-main-img"><img id="qv-main-img" src="" alt=""></div>
+        <div class="qv-thumbs" id="qv-thumbs"></div>
+      </div>
+      <div class="qv-info">
+        <h3 id="qv-name"></h3>
+        <p class="price" id="qv-price"></p>
+        <p class="card-desc" id="qv-desc"></p>
+        <div class="qv-actions" id="qv-actions"></div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(qvOverlay);
+  document.body.appendChild(qvModal);
+
+  function closeQuickView() {
+    qvOverlay.classList.remove('open');
+    qvModal.classList.remove('open');
+    qvModal.setAttribute('aria-hidden', 'true');
+  }
+  qvOverlay.addEventListener('click', closeQuickView);
+  qvModal.querySelector('#qv-close').addEventListener('click', closeQuickView);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeQuickView();
+  });
+
+  function openQuickView({ item, images, desc, primaryBtn }) {
+    const mainImgEl = qvModal.querySelector('#qv-main-img');
+    const thumbsEl = qvModal.querySelector('#qv-thumbs');
+    mainImgEl.src = images[0] || '';
+    mainImgEl.alt = item.name;
+    thumbsEl.innerHTML = '';
+    if (images.length > 1) {
+      images.forEach((src, i) => {
+        const thumb = document.createElement('img');
+        thumb.src = src;
+        thumb.alt = `${item.name} view ${i + 1}`;
+        if (i === 0) thumb.classList.add('active');
+        thumb.addEventListener('click', () => {
+          mainImgEl.src = src;
+          thumbsEl.querySelectorAll('img').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+        thumbsEl.appendChild(thumb);
+      });
+    }
+    qvModal.querySelector('#qv-name').textContent = item.name;
+    qvModal.querySelector('#qv-price').textContent = item.priceText;
+    qvModal.querySelector('#qv-desc').textContent = desc || '';
+
+    const actionsEl = qvModal.querySelector('#qv-actions');
+    actionsEl.innerHTML = '';
+    if (primaryBtn) {
+      const clonedBtn = primaryBtn.cloneNode(true);
+      clonedBtn.addEventListener('click', closeQuickView);
+      actionsEl.appendChild(clonedBtn);
+    }
+    const qvListBtn = document.createElement('button');
+    qvListBtn.className = 'btn-list-add';
+    qvListBtn.type = 'button';
+    qvListBtn.innerHTML = '<span aria-hidden="true">+</span><span class="btn-label">Add to List</span>';
+    qvListBtn.addEventListener('click', () => addToOrderList(item, qvListBtn));
+    actionsEl.appendChild(qvListBtn);
+
+    qvOverlay.classList.add('open');
+    qvModal.classList.add('open');
+    qvModal.setAttribute('aria-hidden', 'false');
+  }
+
   /* ---------- Inject wishlist heart + "Add to List" button onto every real product card ----------
      Runs generically so every category page benefits automatically — no per-page markup needed. */
   document.querySelectorAll('.product-card').forEach(card => {
@@ -336,6 +416,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const name = nameEl.textContent.trim();
     const priceText = priceEl.textContent.trim();
+    const descEl = card.querySelector('.card-desc');
+    const allImgs = Array.from(card.querySelectorAll('.card-media img')).map(el => el.getAttribute('src'));
     const item = {
       id: slugify(name, location.pathname),
       name,
@@ -345,6 +427,15 @@ document.addEventListener('DOMContentLoaded', () => {
       page: location.pathname,
     };
 
+    // "Customizable" badge — every KONGPOSH piece is made to order. Skip if a page
+    // (like the homepage) already hardcoded one, so we don't duplicate it.
+    if (!media.querySelector('.tag-customizable')) {
+      const custTag = document.createElement('span');
+      custTag.className = 'tag tag-customizable tag-right';
+      custTag.textContent = 'Customizable';
+      media.appendChild(custTag);
+    }
+
     const wishBtn = document.createElement('button');
     wishBtn.className = 'wish-btn';
     wishBtn.type = 'button';
@@ -353,6 +444,19 @@ document.addEventListener('DOMContentLoaded', () => {
     wishBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20.5s-7.5-4.6-9.8-9.4C.8 7.8 2.4 4.5 5.7 3.8c2-.4 3.9.5 5 2.1 1.1-1.6 3-2.5 5-2.1 3.3.7 4.9 4 3.5 7.3-2.3 4.8-9.8 9.4-9.8 9.4z"/></svg>';
     wishBtn.addEventListener('click', () => toggleWishlist(item));
     media.appendChild(wishBtn);
+
+    const qvBtn = document.createElement('button');
+    qvBtn.className = 'quick-view-btn';
+    qvBtn.type = 'button';
+    qvBtn.setAttribute('aria-label', `Quick view ${name}`);
+    qvBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+    qvBtn.addEventListener('click', () => openQuickView({
+      item,
+      images: allImgs.length ? allImgs : [item.img],
+      desc: descEl ? descEl.textContent.trim() : '',
+      primaryBtn: card.querySelector('.btn-add'),
+    }));
+    media.appendChild(qvBtn);
 
     const listBtn = document.createElement('button');
     listBtn.className = 'btn-list-add';
