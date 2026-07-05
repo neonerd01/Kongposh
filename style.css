@@ -279,6 +279,46 @@ button{ font-family: inherit; cursor: pointer; }
 .wish-btn.active{ color: var(--rust); border-color: var(--rust); }
 .wish-btn.active svg{ fill: var(--rust); }
 
+/* Quick View button + modal */
+.quick-view-btn{
+  position:absolute; bottom:10px; left:10px; z-index:5;
+  width:34px; height:34px; border-radius:50%;
+  background: rgba(251,248,242,0.92); border: 1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  color: var(--ink-soft); transition: all .18s ease;
+}
+.quick-view-btn:hover{ color: var(--ink); border-color: var(--ink); }
+
+.qv-overlay{
+  position: fixed; inset:0; background: rgba(43,38,32,0.55);
+  z-index: 400; opacity:0; visibility:hidden; transition: opacity .25s ease;
+}
+.qv-overlay.open{ opacity:1; visibility:visible; }
+.qv-modal{
+  position: fixed; top:50%; left:50%; transform: translate(-50%,-48%) scale(0.97);
+  width: min(760px, 92vw); max-height: 86vh; overflow-y:auto;
+  background: var(--card); border-radius: 10px;
+  z-index: 401; opacity:0; visibility:hidden; pointer-events:none;
+  transition: opacity .25s ease, transform .25s ease;
+  box-shadow: 0 30px 60px rgba(43,38,32,0.25);
+}
+.qv-modal.open{ opacity:1; visibility:visible; pointer-events:auto; transform: translate(-50%,-50%) scale(1); }
+.qv-close{ position:absolute; top:14px; right:14px; z-index:5; background: var(--linen); }
+.qv-body{ display:grid; grid-template-columns: 1fr 1fr; }
+.qv-main-img{ aspect-ratio:1/1; overflow:hidden; }
+.qv-main-img img{ width:100%; height:100%; object-fit:cover; }
+.qv-thumbs{ display:flex; gap:8px; padding:10px; flex-wrap:wrap; }
+.qv-thumbs img{ width:52px; height:52px; object-fit:cover; border-radius:6px; cursor:pointer; border:2px solid transparent; }
+.qv-thumbs img.active{ border-color: var(--gold-deep); }
+.qv-info{ padding: 32px 28px; display:flex; flex-direction:column; gap:10px; }
+.qv-info h3{ font-family: var(--font-display); font-size:1.4rem; margin:0; }
+.qv-info .price{ font-size:1.2rem; }
+.qv-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+@media (max-width: 700px){
+  .qv-body{ grid-template-columns: 1fr; }
+  .qv-modal{ width: 92vw; }
+}
+
 /* =========================================================
    Card image slider (multiple photos of one design)
 ========================================================= */
