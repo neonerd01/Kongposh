@@ -62,8 +62,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ---------- Cart ---------- */
-  let cart = []; // { name, price, qty }
+  /* ---------- Storage helpers ---------- */
+  const ORDER_LIST_KEY = 'kongposh_order_list';
+  const WISHLIST_KEY = 'kongposh_wishlist';
+
+  function loadItems(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+  function saveItems(key, items) {
+    try { localStorage.setItem(key, JSON.stringify(items)); } catch (e) { /* storage unavailable */ }
+  }
+  function slugify(name, page) {
+    return (page + '::' + name).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  }
+  function parsePrice(text) {
+    const match = (text || '').match(/[\d.]+/);
+    return match ? parseFloat(match[0]) : 0;
+  }
+
+  /* ---------- Custom Order List (replaces traditional cart — every piece here is made to order, not fixed stock) ---------- */
+  let orderList = loadItems(ORDER_LIST_KEY);
   const cartCountEl = document.getElementById('cart-count');
   const cartItemsEl = document.getElementById('cart-items');
   const cartEmptyEl = document.getElementById('cart-empty');
@@ -87,73 +110,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderCart() {
     cartItemsEl.querySelectorAll('.cart-line').forEach(el => el.remove());
-    if (cart.length === 0) {
+    if (orderList.length === 0) {
       cartEmptyEl.style.display = 'block';
     } else {
       cartEmptyEl.style.display = 'none';
-      cart.forEach((item, i) => {
+      orderList.forEach((item) => {
         const line = document.createElement('div');
         line.className = 'cart-line';
         line.innerHTML = `
-          <div>
+          ${item.img ? `<img class="cart-line-img" src="${item.img}" alt="">` : ''}
+          <div class="cart-line-body">
             <div class="cart-line-name">${item.name}</div>
-            <div class="cart-line-qty">Qty ${item.qty} · $${item.price} each</div>
+            <div class="cart-line-qty">${item.priceText || ''}</div>
           </div>
-          <button class="cart-line-remove" data-index="${i}">Remove</button>
+          <button class="cart-line-remove" data-id="${item.id}">Remove</button>
         `;
         cartItemsEl.appendChild(line);
       });
       cartItemsEl.querySelectorAll('.cart-line-remove').forEach(btn => {
         btn.addEventListener('click', (e) => {
-          const idx = Number(e.target.dataset.index);
-          cart.splice(idx, 1);
-          renderCart();
+          removeFromOrderList(e.target.dataset.id);
         });
       });
     }
-    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const total = orderList.reduce((sum, item) => sum + (item.price || 0), 0);
     cartTotalEl.textContent = `$${total}`;
-    const count = cart.reduce((sum, item) => sum + item.qty, 0);
-    cartCountEl.textContent = count;
+    cartCountEl.textContent = orderList.length;
+    syncListButtons();
   }
 
-  function addToCart(name, price, btn) {
-    const existing = cart.find(item => item.name === name);
-    if (existing) {
-      existing.qty += 1;
-    } else {
-      cart.push({ name, price, qty: 1 });
-    }
-    renderCart();
-    showToast(`${name} added to bag`);
-    if (btn) {
-      btn.classList.add('added');
-      btn.textContent = 'Added';
-      setTimeout(() => {
-        btn.classList.remove('added');
-        btn.textContent = 'Add';
-      }, 1200);
-    }
-  }
-
-  // FIX: only wire up real "Add to cart" buttons (ones with data-name/data-price).
-  // "Choose This Design" buttons reuse the .btn-add class for styling only and
-  // have their own onclick="chooseDesign(...)" handler — without this filter,
-  // clicking them was also silently triggering a broken addToCart(undefined, NaN) call.
-  document.querySelectorAll('.btn-add[data-name]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const name = btn.dataset.name;
-      const price = Number(btn.dataset.price);
-      addToCart(name, price, btn);
-    });
-  });
-
-  document.getElementById('checkout-btn').addEventListener('click', () => {
-    if (cart.length === 0) {
-      showToast('Your bag is empty');
+  function addToOrderList(item, btn) {
+    const exists = orderList.find(i => i.id === item.id);
+    if (exists) {
+      showToast(`${item.name} is already in your Custom Order List`);
       return;
     }
-    showToast('Checkout is not connected yet — this is a UI demo');
+    orderList.push(item);
+    saveItems(ORDER_LIST_KEY, orderList);
+    renderCart();
+    showToast(`${item.name} added to your Custom Order List`);
+    if (btn) {
+      btn.classList.add('added');
+      const label = btn.querySelector('.btn-label');
+      if (label) label.textContent = 'Added';
+      setTimeout(() => {
+        btn.classList.remove('added');
+        if (label) label.textContent = 'Add to List';
+      }, 1400);
+    }
+  }
+
+  function removeFromOrderList(id) {
+    orderList = orderList.filter(i => i.id !== id);
+    saveItems(ORDER_LIST_KEY, orderList);
+    renderCart();
+  }
+
+  // Keep every "+ Add to List" button in sync with what's actually stored (e.g. after removing via the drawer)
+  function syncListButtons() {
+    document.querySelectorAll('.btn-list-add[data-item-id]').forEach(btn => {
+      const inList = orderList.some(i => i.id === btn.dataset.itemId);
+      btn.classList.toggle('added', inList);
+      const label = btn.querySelector('.btn-label');
+      if (label) label.textContent = inList ? 'Added' : 'Add to List';
+    });
+  }
+
+  document.getElementById('checkout-btn').addEventListener('click', () => {
+    if (orderList.length === 0) {
+      showToast('Your Custom Order List is empty');
+      return;
+    }
+    // TODO: replace with your real WhatsApp number (country code + number, no + or spaces)
+    const WHATSAPP_NUMBER = '910000000000';
+    const lines = orderList.map((item, i) => `${i + 1}. ${item.name} (${item.priceText || 'price on request'})`);
+    const message = `Hi KONGPOSH! I'd like to start a custom order for:\n\n${lines.join('\n')}\n\nPlease let me know the next steps.`;
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
   });
 
   /* ---------- Toast ---------- */
@@ -176,6 +209,162 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ---------- Wishlist ---------- */
+  let wishlist = loadItems(WISHLIST_KEY);
+  const wishCountEl = document.getElementById('wishlist-count');
+  const wishItemsEl = document.getElementById('wishlist-items');
+  const wishEmptyEl = document.getElementById('wishlist-empty');
+  const wishDrawer = document.getElementById('wishlist-drawer');
+  const wishOverlay = document.getElementById('wishlist-overlay');
+
+  function openWishlist() {
+    wishDrawer.classList.add('open');
+    wishOverlay.classList.add('open');
+    wishDrawer.setAttribute('aria-hidden', 'false');
+  }
+  function closeWishlist() {
+    wishDrawer.classList.remove('open');
+    wishOverlay.classList.remove('open');
+    wishDrawer.setAttribute('aria-hidden', 'true');
+  }
+  const wishToggleBtn = document.getElementById('wishlist-toggle');
+  if (wishToggleBtn) {
+    wishToggleBtn.addEventListener('click', openWishlist);
+    document.getElementById('wishlist-close').addEventListener('click', closeWishlist);
+    wishOverlay.addEventListener('click', closeWishlist);
+  }
+
+  function renderWishlist() {
+    if (!wishItemsEl) return;
+    wishItemsEl.querySelectorAll('.cart-line').forEach(el => el.remove());
+    if (wishlist.length === 0) {
+      wishEmptyEl.style.display = 'block';
+    } else {
+      wishEmptyEl.style.display = 'none';
+      wishlist.forEach((item) => {
+        const line = document.createElement('div');
+        line.className = 'cart-line';
+        line.innerHTML = `
+          ${item.img ? `<img class="cart-line-img" src="${item.img}" alt="">` : ''}
+          <div class="cart-line-body">
+            <div class="cart-line-name">${item.name}</div>
+            <div class="cart-line-qty">${item.priceText || ''}</div>
+          </div>
+          <button class="cart-line-remove" data-id="${item.id}">Remove</button>
+        `;
+        wishItemsEl.appendChild(line);
+      });
+      wishItemsEl.querySelectorAll('.cart-line-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => toggleWishlist(
+          wishlist.find(i => i.id === e.target.dataset.id)
+        ));
+      });
+    }
+    if (wishCountEl) wishCountEl.textContent = wishlist.length;
+    syncWishButtons();
+  }
+
+  function toggleWishlist(item, btn) {
+    const idx = wishlist.findIndex(i => i.id === item.id);
+    if (idx > -1) {
+      wishlist.splice(idx, 1);
+      showToast(`${item.name} removed from wishlist`);
+    } else {
+      wishlist.push(item);
+      showToast(`${item.name} saved to wishlist`);
+    }
+    saveItems(WISHLIST_KEY, wishlist);
+    renderWishlist();
+  }
+
+  function syncWishButtons() {
+    document.querySelectorAll('.wish-btn[data-item-id]').forEach(btn => {
+      const saved = wishlist.some(i => i.id === btn.dataset.itemId);
+      btn.classList.toggle('active', saved);
+    });
+  }
+
+  const shareBtn = document.getElementById('wishlist-share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async () => {
+      if (wishlist.length === 0) {
+        showToast('Your wishlist is empty');
+        return;
+      }
+      const text = `My KONGPOSH wishlist:\n${wishlist.map(i => `• ${i.name}`).join('\n')}`;
+      if (navigator.share) {
+        try { await navigator.share({ title: 'My KONGPOSH Wishlist', text }); }
+        catch (e) { /* user cancelled share — nothing to do */ }
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        showToast('Wishlist copied to clipboard');
+      } else {
+        showToast('Sharing is not supported on this browser');
+      }
+    });
+  }
+
+  const moveAllBtn = document.getElementById('wishlist-move-all-btn');
+  if (moveAllBtn) {
+    moveAllBtn.addEventListener('click', () => {
+      if (wishlist.length === 0) {
+        showToast('Your wishlist is empty');
+        return;
+      }
+      let added = 0;
+      wishlist.forEach(item => {
+        if (!orderList.some(i => i.id === item.id)) {
+          orderList.push(item);
+          added++;
+        }
+      });
+      saveItems(ORDER_LIST_KEY, orderList);
+      renderCart();
+      showToast(added > 0 ? `${added} design(s) added to your Custom Order List` : 'Already in your Custom Order List');
+    });
+  }
+
+  /* ---------- Inject wishlist heart + "Add to List" button onto every real product card ----------
+     Runs generically so every category page benefits automatically — no per-page markup needed. */
+  document.querySelectorAll('.product-card').forEach(card => {
+    const media = card.querySelector('.card-media');
+    const foot = card.querySelector('.card-foot');
+    const nameEl = card.querySelector('.card-body h3');
+    const priceEl = card.querySelector('.price');
+    const imgEl = card.querySelector('.card-media img');
+    if (!media || !foot || !nameEl || !priceEl) return; // skip non-product cards (e.g. review cards)
+
+    const name = nameEl.textContent.trim();
+    const priceText = priceEl.textContent.trim();
+    const item = {
+      id: slugify(name, location.pathname),
+      name,
+      priceText,
+      price: parsePrice(priceText),
+      img: imgEl ? imgEl.getAttribute('src') : '',
+      page: location.pathname,
+    };
+
+    const wishBtn = document.createElement('button');
+    wishBtn.className = 'wish-btn';
+    wishBtn.type = 'button';
+    wishBtn.setAttribute('aria-label', 'Save to wishlist');
+    wishBtn.dataset.itemId = item.id;
+    wishBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20.5s-7.5-4.6-9.8-9.4C.8 7.8 2.4 4.5 5.7 3.8c2-.4 3.9.5 5 2.1 1.1-1.6 3-2.5 5-2.1 3.3.7 4.9 4 3.5 7.3-2.3 4.8-9.8 9.4-9.8 9.4z"/></svg>';
+    wishBtn.addEventListener('click', () => toggleWishlist(item));
+    media.appendChild(wishBtn);
+
+    const listBtn = document.createElement('button');
+    listBtn.className = 'btn-list-add';
+    listBtn.type = 'button';
+    listBtn.dataset.itemId = item.id;
+    listBtn.innerHTML = '<span aria-hidden="true">+</span><span class="btn-label">Add to List</span>';
+    listBtn.addEventListener('click', () => addToOrderList(item, listBtn));
+    foot.appendChild(listBtn);
+  });
+
+  syncWishButtons();
+  renderWishlist();
   renderCart();
 });
 
