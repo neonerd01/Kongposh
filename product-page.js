@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   crumb.innerHTML = `
     <a href="index.html">Home</a>
     <span class="crumb-sep">/</span>
-    <a href="${product.page.replace(/^\//, '')}">${product.pageLabel}</a>
+    <a href="${product.page}">${product.pageLabel}</a>
     <span class="crumb-sep">/</span>
     <span class="crumb-current">${product.name}</span>
   `;
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('pd-price').textContent = product.priceText;
   document.getElementById('pd-desc').textContent = product.desc || '';
 
-  const categoryPage = product.page.replace(/^\//, '');
+  const categoryPage = product.page;
   document.getElementById('pd-back-link').href = categoryPage;
   document.getElementById('pd-customize-btn').href =
     `${categoryPage}?design=${encodeURIComponent(product.name)}&type=${encodeURIComponent(product.type)}#custom-order`;
