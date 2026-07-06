@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // TODO: replace with your real WhatsApp number (country code + number, no + or spaces)
   // Shared across the order-list checkout AND the Custom Product Builder's "Send via WhatsApp Now".
-  const WHATSAPP_NUMBER = '910000000000';
+  const WHATSAPP_NUMBER = '919103830394';
 
   /* ---------- Custom Order List (replaces traditional cart — every piece here is made to order, not fixed stock) ---------- */
   let orderList = loadItems(ORDER_LIST_KEY);
@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       cartEmptyEl.style.display = 'none';
       orderList.forEach((item) => {
+        const qty = item.qty || 1;
         const line = document.createElement('div');
         line.className = 'cart-line';
         line.innerHTML = `
@@ -169,10 +170,22 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="cart-line-body">
             <div class="cart-line-name">${item.name}</div>
             <div class="cart-line-qty">${item.priceText || ''}${item.builderDetails ? ' · full details go in your WhatsApp message' : ''}</div>
+            ${!item.builderDetails ? `
+            <div class="cart-line-qty-stepper">
+              <button class="qty-step" data-id="${item.id}" data-dir="-1" aria-label="Decrease quantity">−</button>
+              <span class="qty-value">${qty}</span>
+              <button class="qty-step" data-id="${item.id}" data-dir="1" aria-label="Increase quantity">+</button>
+            </div>` : ''}
           </div>
           <button class="cart-line-remove" data-id="${item.id}">Remove</button>
         `;
         cartItemsEl.appendChild(line);
+      });
+      cartItemsEl.querySelectorAll('.qty-step').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const dir = Number(e.currentTarget.dataset.dir);
+          changeOrderListQty(e.currentTarget.dataset.id, dir);
+        });
       });
       cartItemsEl.querySelectorAll('.cart-line-remove').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -180,22 +193,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     }
-    const total = orderList.reduce((sum, item) => sum + (item.price || 0), 0);
+    const total = orderList.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0);
     cartTotalEl.textContent = `$${total}`;
-    cartCountEl.textContent = orderList.length;
+    cartCountEl.textContent = orderList.reduce((sum, item) => sum + (item.qty || 1), 0);
     syncListButtons();
   }
 
-  function addToOrderList(item, btn) {
-    const exists = orderList.find(i => i.id === item.id);
-    if (exists) {
-      showToast(`${item.name} is already in your Custom Order List`);
+  function changeOrderListQty(id, delta) {
+    const entry = orderList.find(i => i.id === id);
+    if (!entry) return;
+    entry.qty = (entry.qty || 1) + delta;
+    if (entry.qty < 1) {
+      removeFromOrderList(id);
       return;
     }
-    orderList.push(item);
     saveItems(ORDER_LIST_KEY, orderList);
     renderCart();
-    showToast(`${item.name} added to your Custom Order List`);
+  }
+
+  function addToOrderList(item, btn) {
+    const addQty = item.qty || 1;
+    const exists = orderList.find(i => i.id === item.id);
+    if (exists) {
+      exists.qty = (exists.qty || 1) + addQty;
+      showToast(`${item.name} quantity updated (${exists.qty}) in your Custom Order List`);
+    } else {
+      orderList.push(Object.assign({}, item, { qty: addQty }));
+      showToast(`${item.name} added to your Custom Order List`);
+    }
+    saveItems(ORDER_LIST_KEY, orderList);
+    renderCart();
     if (btn) {
       btn.classList.add('added');
       const label = btn.querySelector('.btn-label');
@@ -230,7 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // TODO: replace with your real WhatsApp number (country code + number, no + or spaces)
     const lines = orderList.map((item, i) => {
-      const header = `${i + 1}. ${item.name} (${item.priceText || 'price on request'})`;
+      const qty = item.qty || 1;
+      const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+      const header = `${i + 1}. ${qtyPrefix}${item.name} (${item.priceText || 'price on request'})`;
       if (item.builderDetails && item.builderDetails.length) {
         const indented = item.builderDetails.map(l => `    - ${l}`).join('\n');
         return `${header}\n${indented}`;
@@ -695,6 +724,48 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterTabsEl) mainCol.appendChild(filterTabsEl);
     mainCol.appendChild(productGrid);
 
+    /* ---- Pagination ("Load More") — only kicks in when a grid has more than
+       PAGE_SIZE cards, and steps aside whenever a filter (tab or sidebar) is
+       active so filtered results are never artificially truncated. ---- */
+    const PAGE_SIZE = 8;
+    const allCardsArr = Array.from(productGrid.querySelectorAll('.product-card'));
+    let loadMoreBtn = null;
+
+    function applyPagination() {
+      if (allCardsArr.length <= PAGE_SIZE) return;
+      allCardsArr.forEach((card, i) => card.classList.toggle('page-hidden', i >= PAGE_SIZE));
+      if (!loadMoreBtn) {
+        loadMoreBtn = document.createElement('button');
+        loadMoreBtn.type = 'button';
+        loadMoreBtn.className = 'btn btn-ghost load-more-btn';
+        loadMoreBtn.addEventListener('click', () => {
+          const hidden = productGrid.querySelectorAll('.page-hidden');
+          Array.from(hidden).slice(0, PAGE_SIZE).forEach(c => c.classList.remove('page-hidden'));
+          const remaining = productGrid.querySelectorAll('.page-hidden').length;
+          if (remaining > 0) loadMoreBtn.textContent = `Load More (${remaining} left)`;
+          else loadMoreBtn.style.display = 'none';
+        });
+        mainCol.appendChild(loadMoreBtn);
+      }
+      const remaining = allCardsArr.length - PAGE_SIZE;
+      loadMoreBtn.style.display = '';
+      loadMoreBtn.textContent = `Load More (${remaining} left)`;
+    }
+    function clearPagination() {
+      allCardsArr.forEach(card => card.classList.remove('page-hidden'));
+      if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+    }
+    applyPagination();
+
+    if (filterTabsEl) {
+      filterTabsEl.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          if (tab.dataset.filter === 'all') applyPagination();
+          else clearPagination();
+        });
+      });
+    }
+
     const aside = document.createElement('aside');
     aside.className = 'filter-sidebar';
     aside.innerHTML = `
@@ -758,6 +829,16 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       ensureProductsData().then(populateSidebar).catch(() => { /* sidebar simply stays empty */ });
     }
+
+    // Delegated listener fires after each button's own click handler (since it
+    // reaches `aside` during the bubble phase), so `.active` state is already
+    // updated by the time we check it here.
+    aside.addEventListener('click', (e) => {
+      if (e.target.closest('.filter-sidebar-item') || e.target.closest('.filter-sidebar-clear')) {
+        const anyActive = aside.querySelector('.filter-sidebar-item.active');
+        if (anyActive) clearPagination(); else applyPagination();
+      }
+    });
 
     /* ---- Related categories ---- */
     const relatedSection = document.createElement('section');
