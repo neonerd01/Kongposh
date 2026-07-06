@@ -91,8 +91,18 @@
           <div class="pd-meta-item">✦ Message us on WhatsApp anytime for questions before you order</div>
         </div>
 
+        <div class="pd-qty-row">
+          <span class="pd-qty-label">Quantity</span>
+          <div class="qty-selector">
+            <button type="button" class="qty-step" id="pd-qty-minus" aria-label="Decrease quantity">−</button>
+            <input type="number" id="pd-qty-input" value="1" min="1" inputmode="numeric">
+            <button type="button" class="qty-step" id="pd-qty-plus" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+
         <div class="pd-actions">
-          <a href="#" id="pd-customize-btn" class="btn btn-primary">Customize This Design</a>
+          <button type="button" id="pd-buy-now-btn" class="btn btn-primary">Buy Now via WhatsApp</button>
+          <a href="#" id="pd-customize-btn" class="btn btn-ghost">Customize This Design</a>
           <button type="button" id="pd-wish-btn" class="btn-list-add" style="padding:13px 22px;">
             <span aria-hidden="true">♡</span><span class="btn-label">Save to Wishlist</span>
           </button>
@@ -115,6 +125,17 @@
       <h2>You May Also Like</h2>
     </div>
     <div class="product-grid" id="pd-related-grid"></div>
+  </div>
+</section>
+
+<!-- ================= RECENTLY VIEWED ================= -->
+<section class="shop" style="padding-top:0;" id="pd-recently-viewed-section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Your History</p>
+      <h2>Recently Viewed</h2>
+    </div>
+    <div class="product-grid" id="pd-recently-viewed-grid"></div>
   </div>
 </section>
 
@@ -145,7 +166,7 @@
     </div>
     <div class="footer-col">
       <h4>Follow</h4>
-      <a href="#">Instagram</a>
+      <a href="https://www.instagram.com/kong._posh/" target="_blank" rel="noopener">Instagram</a>
       <a href="#">Facebook</a>
       <a href="#">WhatsApp</a>
     </div>
@@ -187,6 +208,14 @@
 </aside>
 
 <div class="toast" id="toast"></div>
+
+<!-- ================= STICKY MOBILE BAR ================= -->
+<div class="pd-sticky-bar" id="pd-sticky-bar">
+  <div class="pd-sticky-price">
+    <span id="pd-sticky-price-text"></span>
+  </div>
+  <button type="button" class="btn btn-primary" id="pd-sticky-buy-btn">Buy Now</button>
+</div>
 
 <script src="products-data.js"></script>
 <script src="script.js"></script>
