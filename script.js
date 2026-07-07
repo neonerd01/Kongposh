@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   })();
 
+  // Make nav visible after rebuild
+const nav = document.getElementById('main-nav');
+if (nav) nav.classList.add('visible');
   /* ---------- Footer year ---------- */
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
