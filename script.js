@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     const total = orderList.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0);
-    cartTotalEl.textContent = `$${total}`;
+    cartTotalEl.textContent = `₹${total}`;
     cartCountEl.textContent = orderList.reduce((sum, item) => sum + (item.qty || 1), 0);
     syncListButtons();
   }
