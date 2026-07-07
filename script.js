@@ -141,10 +141,120 @@ document.addEventListener('DOMContentLoaded', () => {
   const cartDrawer = document.getElementById('cart-drawer');
   const cartOverlay = document.getElementById('cart-overlay');
 
+  /* Save for Later + You Might Also Like — injected once into the drawer so no
+     per-page HTML edits are needed (same pattern as everything else here). */
+  const SAVED_LATER_KEY = 'kongposh_saved_for_later';
+  let savedForLater = loadItems(SAVED_LATER_KEY);
+
+  const savedLaterSection = document.createElement('div');
+  savedLaterSection.className = 'cart-subsection';
+  savedLaterSection.id = 'saved-later-section';
+  savedLaterSection.style.display = 'none';
+  savedLaterSection.innerHTML = `
+    <p class="cart-subsection-label">Saved For Later</p>
+    <div class="cart-items" id="saved-later-items"></div>
+  `;
+  const suggestSection = document.createElement('div');
+  suggestSection.className = 'cart-subsection';
+  suggestSection.id = 'cart-suggest-section';
+  suggestSection.style.display = 'none';
+  suggestSection.innerHTML = `
+    <p class="cart-subsection-label">You Might Also Like</p>
+    <div class="cart-suggest-grid" id="cart-suggest-grid"></div>
+  `;
+  cartDrawer.insertBefore(savedLaterSection, cartDrawer.querySelector('.cart-drawer-foot'));
+  cartDrawer.insertBefore(suggestSection, cartDrawer.querySelector('.cart-drawer-foot'));
+
+  function renderSavedForLater() {
+    const container = document.getElementById('saved-later-items');
+    if (!savedForLater.length) {
+      savedLaterSection.style.display = 'none';
+      return;
+    }
+    savedLaterSection.style.display = 'block';
+    container.innerHTML = savedForLater.map(item => `
+      <div class="cart-line">
+        ${item.img ? `<img class="cart-line-img" src="${item.img}" alt="">` : ''}
+        <div class="cart-line-body">
+          <div class="cart-line-name">${item.name}</div>
+          <div class="cart-line-qty">${item.priceText || ''}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+          <button class="cart-line-remove move-to-list-btn" data-id="${item.id}" style="color:var(--sage);">Move to List</button>
+          <button class="cart-line-remove" data-id="${item.id}" data-remove-saved="1">Remove</button>
+        </div>
+      </div>
+    `).join('');
+    container.querySelectorAll('.move-to-list-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => moveSavedToOrderList(e.target.dataset.id));
+    });
+    container.querySelectorAll('[data-remove-saved]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        savedForLater = savedForLater.filter(i => i.id !== e.target.dataset.id);
+        saveItems(SAVED_LATER_KEY, savedForLater);
+        renderSavedForLater();
+      });
+    });
+  }
+
+  function saveForLater(id) {
+    const item = orderList.find(i => i.id === id);
+    if (!item) return;
+    orderList = orderList.filter(i => i.id !== id);
+    savedForLater = savedForLater.filter(i => i.id !== id);
+    savedForLater.push(item);
+    saveItems(ORDER_LIST_KEY, orderList);
+    saveItems(SAVED_LATER_KEY, savedForLater);
+    renderCart();
+    renderSavedForLater();
+    showToast(`${item.name} saved for later`);
+  }
+
+  function moveSavedToOrderList(id) {
+    const item = savedForLater.find(i => i.id === id);
+    if (!item) return;
+    savedForLater = savedForLater.filter(i => i.id !== id);
+    const existing = orderList.find(i => i.id === id);
+    if (existing) existing.qty = (existing.qty || 1) + (item.qty || 1);
+    else orderList.push(item);
+    saveItems(ORDER_LIST_KEY, orderList);
+    saveItems(SAVED_LATER_KEY, savedForLater);
+    renderCart();
+    renderSavedForLater();
+    showToast(`${item.name} moved back to your Custom Order List`);
+  }
+
+  function renderCartSuggestions() {
+    const grid = document.getElementById('cart-suggest-grid');
+    ensureProductsData().then(() => {
+      const all = window.KONGPOSH_PRODUCTS || [];
+      if (!all.length) { suggestSection.style.display = 'none'; return; }
+      const excludeIds = new Set([...orderList, ...savedForLater].map(i => i.id));
+      const pool = all.filter(p => !excludeIds.has(p.id));
+      if (!pool.length) { suggestSection.style.display = 'none'; return; }
+      // Simple, deterministic-ish variety: pick from spread-out points in the catalog
+      const picks = [];
+      const step = Math.max(1, Math.floor(pool.length / 3));
+      for (let i = 0; i < pool.length && picks.length < 3; i += step) picks.push(pool[i]);
+      suggestSection.style.display = 'block';
+      grid.innerHTML = picks.map(p => {
+        const img = (p.images && p.images[0]) || '';
+        return `
+          <a class="cart-suggest-item" href="product.html?id=${encodeURIComponent(p.id)}">
+            ${img ? `<img src="${img}" alt="">` : `<div class="search-result-noimg"></div>`}
+            <div class="cart-suggest-name">${p.name}</div>
+            <div class="cart-suggest-price">${p.priceText}</div>
+          </a>`;
+      }).join('');
+    }).catch(() => { suggestSection.style.display = 'none'; });
+  }
+
   function openCart() {
     cartDrawer.classList.add('open');
     cartOverlay.classList.add('open');
     cartDrawer.setAttribute('aria-hidden', 'false');
+    renderSavedForLater();
+    renderCartSuggestions();
   }
   function closeCart() {
     cartDrawer.classList.remove('open');
@@ -177,7 +287,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <button class="qty-step" data-id="${item.id}" data-dir="1" aria-label="Increase quantity">+</button>
             </div>` : ''}
           </div>
-          <button class="cart-line-remove" data-id="${item.id}">Remove</button>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+            <button class="cart-line-remove save-later-btn" data-id="${item.id}" style="color:var(--sage);">Save for Later</button>
+            <button class="cart-line-remove" data-id="${item.id}">Remove</button>
+          </div>
         `;
         cartItemsEl.appendChild(line);
       });
@@ -187,7 +300,10 @@ document.addEventListener('DOMContentLoaded', () => {
           changeOrderListQty(e.currentTarget.dataset.id, dir);
         });
       });
-      cartItemsEl.querySelectorAll('.cart-line-remove').forEach(btn => {
+      cartItemsEl.querySelectorAll('.save-later-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => saveForLater(e.target.dataset.id));
+      });
+      cartItemsEl.querySelectorAll('.cart-line-remove:not(.save-later-btn)').forEach(btn => {
         btn.addEventListener('click', (e) => {
           removeFromOrderList(e.target.dataset.id);
         });
@@ -279,6 +395,22 @@ document.addEventListener('DOMContentLoaded', () => {
     toast.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  /* ---------- Write a Review (homepage) — no backend to store/moderate
+     reviews, so this sends straight to WhatsApp instead of "posting" anything. ---------- */
+  const reviewForm = document.getElementById('write-review-form');
+  if (reviewForm) {
+    reviewForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('review-name').value.trim();
+      const rating = document.getElementById('review-rating').value;
+      const text = document.getElementById('review-text').value.trim();
+      const message = `Hi KONGPOSH! I'd like to leave a review.\n\nName: ${name}\nRating: ${rating}/5\nReview: ${text}`;
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+      reviewForm.reset();
+      showToast('Thank you! Opening WhatsApp to send your review...');
+    });
   }
 
   /* ---------- Newsletter ---------- */
@@ -436,6 +568,12 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="search-modal-head">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
       <input type="text" id="search-input" placeholder="Search embroidery, crochet, jewellery…" autocomplete="off" disabled>
+      <select id="search-sort" class="search-sort" style="display:none;">
+        <option value="relevance">Sort: Relevance</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="name-asc">Name: A-Z</option>
+      </select>
       <button class="icon-btn" id="search-close" aria-label="Close search">✕</button>
     </div>
     <div class="search-results" id="search-results">
@@ -445,6 +583,42 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.appendChild(searchOverlay);
   document.body.appendChild(searchModal);
 
+  /* Recent searches — localStorage, most-recent-first, capped at 5 */
+  const RECENT_SEARCHES_KEY = 'kongposh_recent_searches';
+  const POPULAR_SEARCHES = ['Crochet', 'Jewellery', 'Embroidery', 'Calligraphy', 'Nikkah Dupatta', 'Custom Gifts'];
+  function getRecentSearches() {
+    try { return JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY)) || []; } catch (e) { return []; }
+  }
+  function addRecentSearch(q) {
+    q = q.trim();
+    if (!q) return;
+    let list = getRecentSearches().filter(item => item.toLowerCase() !== q.toLowerCase());
+    list.unshift(q);
+    try { localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(list.slice(0, 5))); } catch (e) { /* storage unavailable */ }
+  }
+  function renderSearchChips() {
+    const resultsEl = document.getElementById('search-results');
+    const recent = getRecentSearches();
+    let html = '';
+    if (recent.length) {
+      html += `<div class="search-chip-group"><p class="search-chip-label">Recent Searches</p><div class="search-chips">${
+        recent.map(q => `<button type="button" class="search-chip" data-q="${q}">${q}</button>`).join('')
+      }</div></div>`;
+    }
+    html += `<div class="search-chip-group"><p class="search-chip-label">Popular Searches</p><div class="search-chips">${
+      POPULAR_SEARCHES.map(q => `<button type="button" class="search-chip" data-q="${q}">${q}</button>`).join('')
+    }</div></div>`;
+    resultsEl.innerHTML = html;
+    resultsEl.querySelectorAll('.search-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const q = chip.dataset.q;
+        document.getElementById('search-input').value = q;
+        addRecentSearch(q);
+        renderSearchResults(q);
+      });
+    });
+  }
+
   function openSearch() {
     searchOverlay.classList.add('open');
     searchModal.classList.add('open');
@@ -453,7 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsEl = document.getElementById('search-results');
     resultsEl.innerHTML = '<p class="cart-empty">Loading designs…</p>';
     ensureProductsData().then(() => {
-      resultsEl.innerHTML = '<p class="cart-empty">Start typing to search every design across KONGPOSH.</p>';
+      renderSearchChips();
       input.disabled = false;
       input.focus();
     }).catch(() => {
@@ -467,22 +641,31 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function renderSearchResults(query) {
     const resultsEl = document.getElementById('search-results');
+    const sortSel = document.getElementById('search-sort');
     const products = window.KONGPOSH_PRODUCTS || [];
     if (!query.trim()) {
-      resultsEl.innerHTML = '<p class="cart-empty">Start typing to search every design across KONGPOSH.</p>';
+      sortSel.style.display = 'none';
+      renderSearchChips();
       return;
     }
     const q = query.trim().toLowerCase();
-    const matches = products.filter(p =>
+    let matches = products.filter(p =>
       p.name.toLowerCase().includes(q) ||
       p.type.toLowerCase().includes(q) ||
       p.pageLabel.toLowerCase().includes(q) ||
       (p.category || '').toLowerCase().includes(q)
-    ).slice(0, 12);
+    );
     if (!matches.length) {
+      sortSel.style.display = 'none';
       resultsEl.innerHTML = `<p class="cart-empty">No designs matched "${query}" — try a category name like "crochet" or "jhumka".</p>`;
       return;
     }
+    sortSel.style.display = 'block';
+    const sortVal = sortSel.value;
+    if (sortVal === 'price-asc') matches = matches.slice().sort((a, b) => (a.price || 0) - (b.price || 0));
+    else if (sortVal === 'price-desc') matches = matches.slice().sort((a, b) => (b.price || 0) - (a.price || 0));
+    else if (sortVal === 'name-asc') matches = matches.slice().sort((a, b) => a.name.localeCompare(b.name));
+    matches = matches.slice(0, 12);
     resultsEl.innerHTML = matches.map(p => {
       const img = (p.images && p.images[0]) || '';
       return `
@@ -498,10 +681,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const searchToggleBtn = document.querySelector('.icon-btn[aria-label="Search"]');
   if (searchToggleBtn) {
+    let searchDebounceTimer = null;
     searchToggleBtn.addEventListener('click', openSearch);
     searchOverlay.addEventListener('click', closeSearch);
     searchModal.querySelector('#search-close').addEventListener('click', closeSearch);
-    searchModal.querySelector('#search-input').addEventListener('input', (e) => renderSearchResults(e.target.value));
+    searchModal.querySelector('#search-input').addEventListener('input', (e) => {
+      const val = e.target.value;
+      renderSearchResults(val);
+      clearTimeout(searchDebounceTimer);
+      if (val.trim().length >= 2) {
+        searchDebounceTimer = setTimeout(() => addRecentSearch(val.trim()), 700);
+      }
+    });
+    searchModal.querySelector('#search-sort').addEventListener('change', () => {
+      renderSearchResults(searchModal.querySelector('#search-input').value);
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeSearch();
       // Quick keyboard shortcut: "/" opens search, unless typing in a field already
