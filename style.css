@@ -922,3 +922,6 @@ textarea.cb-select{ resize: vertical; }
   resize: vertical;
 }
 .write-review-note{ font-size: 0.78rem; color: var(--ink-soft); margin: 0; }
+
+.main-nav { opacity:0; transition: opacity .3s ease-in-out; }
+.main-nav.visible { opacity:1; }
