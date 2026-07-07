@@ -925,3 +925,83 @@ textarea.cb-select{ resize: vertical; }
 
 .main-nav { opacity:0; transition: opacity .3s ease-in-out; }
 .main-nav.visible { opacity:1; }
+
+/* =========================================================
+   Phase 3 — Product card refinement
+   (extends existing .product-card styles above; no overrides
+   that change existing behaviour, only visual polish + a11y)
+========================================================= */
+
+/* Smoother, more premium card elevation on hover */
+.product-card{
+  transition: transform .28s cubic-bezier(.2,.7,.2,1), box-shadow .28s cubic-bezier(.2,.7,.2,1), border-color .28s ease;
+  will-change: transform;
+}
+.product-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 22px 40px rgba(43,38,32,0.13);
+  border-color: rgba(176,141,63,0.35);
+}
+
+/* Clear focus-visible ring for keyboard users on every interactive card control */
+.product-card a:focus-visible,
+.btn-add:focus-visible,
+.btn-list-add:focus-visible,
+.wish-btn:focus-visible,
+.quick-view-btn:focus-visible,
+.tab:focus-visible,
+.view-details-link:focus-visible{
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Stronger visual hierarchy inside the card body */
+.card-body h3{
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+.price{ color: var(--ink); }
+
+/* Tag polish — subtle shadow so labels read on any photo */
+.tag{
+  box-shadow: 0 2px 6px rgba(43,38,32,0.18);
+  backdrop-filter: saturate(1.1);
+}
+
+/* Quick-view / wishlist buttons: hidden-until-hover on pointer devices,
+   always visible on touch. Gives a cleaner card at rest without hurting
+   discoverability where hover doesn't exist. */
+@media (hover: hover) and (pointer: fine){
+  .wish-btn, .quick-view-btn{
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .22s ease, transform .22s ease, color .18s ease, border-color .18s ease;
+  }
+  .product-card:hover .wish-btn,
+  .product-card:hover .quick-view-btn,
+  .wish-btn:focus-visible,
+  .quick-view-btn:focus-visible,
+  .wish-btn.active{
+    opacity: 1; transform: none;
+  }
+}
+
+/* Micro-interaction: gentle pop when a control switches to the "added"/active state */
+.btn-add.added,
+.btn-list-add.added,
+.wish-btn.active{
+  animation: kp-pop .32s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes kp-pop{
+  0%{ transform: scale(.9); }
+  55%{ transform: scale(1.08); }
+  100%{ transform: scale(1); }
+}
+
+/* "Customize This" link-button on homepage cards — align baseline with price row */
+.card-foot .btn-add{ margin-left:auto; }
+
+@media (prefers-reduced-motion: reduce){
+  .product-card, .wish-btn, .quick-view-btn{ transition: none !important; }
+  .btn-add.added, .btn-list-add.added, .wish-btn.active{ animation: none !important; }
+}
