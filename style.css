@@ -1005,3 +1005,51 @@ textarea.cb-select{ resize: vertical; }
   .product-card, .wish-btn, .quick-view-btn{ transition: none !important; }
   .btn-add.added, .btn-list-add.added, .wish-btn.active{ animation: none !important; }
 }
+
+/* =========================================================
+   Phase 4 — Product detail page refinement
+========================================================= */
+
+/* "Click to zoom" hint chip on the main product image */
+.pd-main-img{ position: relative; }
+.pd-zoom-hint{
+  position:absolute; bottom:12px; right:12px; z-index:4;
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:0.72rem; font-weight:600; letter-spacing:0.02em;
+  padding:6px 11px; border-radius:20px;
+  background: rgba(251,248,242,0.9); color: var(--ink-soft);
+  border:1px solid var(--line); box-shadow: 0 2px 8px rgba(43,38,32,0.14);
+  opacity:0; transform: translateY(6px);
+  transition: opacity .25s ease, transform .25s ease;
+  pointer-events:none;
+}
+.pd-main-img:hover .pd-zoom-hint{ opacity:1; transform:none; }
+@media (hover: none){ .pd-zoom-hint{ opacity:1; transform:none; } }
+
+/* Thumbnail active/hover treatment already exists; add smooth fade for main image swap */
+.pd-main-img img{ transition: opacity .2s ease; }
+
+/* Softer, more premium action buttons on the detail page */
+.pd-actions .btn,
+.pd-actions .btn-list-add{ transition: transform .18s ease, background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.pd-actions .btn-primary:hover{ box-shadow: 0 10px 22px rgba(139,111,48,0.28); }
+
+/* Focus-visible rings for detail-page controls (a11y) */
+.pd-actions button:focus-visible,
+.pd-actions a:focus-visible,
+.pd-thumbs img:focus-visible,
+.qty-selector button:focus-visible,
+.qty-selector input:focus-visible,
+#pd-sticky-buy-btn:focus-visible{
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Make thumbnails keyboard-focusable-looking */
+.pd-thumbs img{ transition: border-color .18s ease, opacity .18s ease, transform .18s ease; }
+.pd-thumbs img:hover{ transform: translateY(-2px); }
+
+@media (prefers-reduced-motion: reduce){
+  .pd-zoom-hint, .pd-main-img img, .pd-thumbs img, .pd-actions .btn{ transition: none !important; }
+}
