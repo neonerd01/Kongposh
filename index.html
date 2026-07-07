@@ -494,6 +494,25 @@
         </div>
       </div>
     </div>
+
+    <div class="write-review-card">
+      <h3>Leave a Review</h3>
+      <p class="card-desc" style="margin-bottom:16px;">Reviews aren't posted automatically here — yours goes straight to us on WhatsApp, and we'll follow up.</p>
+      <form id="write-review-form" class="write-review-form">
+        <input type="text" id="review-name" placeholder="Your name" required>
+        <select id="review-rating" required>
+          <option value="">Rating</option>
+          <option value="5">★★★★★ — Excellent</option>
+          <option value="4">★★★★ — Good</option>
+          <option value="3">★★★ — Okay</option>
+          <option value="2">★★ — Not great</option>
+          <option value="1">★ — Poor</option>
+        </select>
+        <textarea id="review-text" placeholder="Tell us about your experience..." rows="3" required></textarea>
+        <p class="write-review-note">Have photos of your piece? Mention it in your message — we'll ask you to send them along on WhatsApp.</p>
+        <button type="submit" class="btn btn-primary">Send Review via WhatsApp</button>
+      </form>
+    </div>
   </div>
 </section>
 
