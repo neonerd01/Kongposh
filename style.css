@@ -234,7 +234,7 @@ button{ font-family: inherit; cursor: pointer; }
   transition: transform .2s ease, box-shadow .2s ease;
 }
 .product-card:hover{ transform: translateY(-4px); box-shadow: 0 18px 32px rgba(43,38,32,0.10); }
-.card-media{ position:relative; aspect-ratio: 1/1; }
+.card-media{ position:relative; aspect-ratio: 1/1; flex-shrink: 0; }
 .card-media .img-placeholder{ min-height:0; height:100%; border-radius:0; border:none; }
 .tag{
   position:absolute; top:12px; left:12px;
@@ -271,9 +271,10 @@ button{ font-family: inherit; cursor: pointer; }
 
 /* Wishlist heart button on product cards */
 .wish-btn{
-  position:absolute; bottom:10px; right:10px; z-index:5;
+  position:absolute; bottom:12px; right:12px; z-index:5;
   width:34px; height:34px; border-radius:50%;
-  background: rgba(251,248,242,0.92); border: 1px solid var(--line);
+  background: #FBF8F2; border: 1px solid var(--line);
+  box-shadow: 0 2px 8px rgba(43,38,32,0.18);
   display:flex; align-items:center; justify-content:center;
   color: var(--ink-soft); transition: all .18s ease;
 }
@@ -283,9 +284,10 @@ button{ font-family: inherit; cursor: pointer; }
 
 /* Quick View button + modal */
 .quick-view-btn{
-  position:absolute; bottom:10px; left:10px; z-index:5;
+  position:absolute; bottom:12px; left:12px; z-index:5;
   width:34px; height:34px; border-radius:50%;
-  background: rgba(251,248,242,0.92); border: 1px solid var(--line);
+  background: #FBF8F2; border: 1px solid var(--line);
+  box-shadow: 0 2px 8px rgba(43,38,32,0.18);
   display:flex; align-items:center; justify-content:center;
   color: var(--ink-soft); transition: all .18s ease;
 }
