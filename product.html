@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Product — KONGPOSH</title>
 <meta name="description" content="Handmade, made-to-order pieces from KONGPOSH.">
+<meta name="theme-color" content="#EFE7D8">
+
+<!-- Open Graph / Twitter (title, description & image refined per-product by product-page.js) -->
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="KONGPOSH">
+<meta property="og:title" content="Product — KONGPOSH">
+<meta property="og:description" content="Handmade, made-to-order pieces from KONGPOSH.">
+<meta name="twitter:card" content="summary_large_image">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Jost:wght@400;500;600&display=swap" as="style" onload="this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Jost:wght@400;500;600&display=swap"></noscript>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -73,8 +84,12 @@
       <!-- Gallery -->
       <div class="pd-gallery">
         <div class="pd-main-img" id="pd-main-img">
-          <img id="pd-main-img-tag" src="" alt="">
+          <img id="pd-main-img-tag" src="" alt="" fetchpriority="high" decoding="async">
           <span class="tag" id="pd-tag" style="display:none;"></span>
+          <span class="pd-zoom-hint" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4M11 8v6M8 11h6"/></svg>
+            Click to zoom
+          </span>
         </div>
         <div class="pd-thumbs" id="pd-thumbs"></div>
       </div>
