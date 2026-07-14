@@ -33,9 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   })();
 
-  // Make nav visible after rebuild
-const nav = document.getElementById('main-nav');
-if (nav) nav.classList.add('visible');
   /* ---------- Footer year ---------- */
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -133,7 +130,7 @@ if (nav) nav.classList.add('visible');
 
   // TODO: replace with your real WhatsApp number (country code + number, no + or spaces)
   // Shared across the order-list checkout AND the Custom Product Builder's "Send via WhatsApp Now".
-  const WHATSAPP_NUMBER = '919103830394';
+  const WHATSAPP_NUMBER = '910000000000';
 
   /* ---------- Custom Order List (replaces traditional cart — every piece here is made to order, not fixed stock) ---------- */
   let orderList = loadItems(ORDER_LIST_KEY);
@@ -144,120 +141,10 @@ if (nav) nav.classList.add('visible');
   const cartDrawer = document.getElementById('cart-drawer');
   const cartOverlay = document.getElementById('cart-overlay');
 
-  /* Save for Later + You Might Also Like — injected once into the drawer so no
-     per-page HTML edits are needed (same pattern as everything else here). */
-  const SAVED_LATER_KEY = 'kongposh_saved_for_later';
-  let savedForLater = loadItems(SAVED_LATER_KEY);
-
-  const savedLaterSection = document.createElement('div');
-  savedLaterSection.className = 'cart-subsection';
-  savedLaterSection.id = 'saved-later-section';
-  savedLaterSection.style.display = 'none';
-  savedLaterSection.innerHTML = `
-    <p class="cart-subsection-label">Saved For Later</p>
-    <div class="cart-items" id="saved-later-items"></div>
-  `;
-  const suggestSection = document.createElement('div');
-  suggestSection.className = 'cart-subsection';
-  suggestSection.id = 'cart-suggest-section';
-  suggestSection.style.display = 'none';
-  suggestSection.innerHTML = `
-    <p class="cart-subsection-label">You Might Also Like</p>
-    <div class="cart-suggest-grid" id="cart-suggest-grid"></div>
-  `;
-  cartDrawer.insertBefore(savedLaterSection, cartDrawer.querySelector('.cart-drawer-foot'));
-  cartDrawer.insertBefore(suggestSection, cartDrawer.querySelector('.cart-drawer-foot'));
-
-  function renderSavedForLater() {
-    const container = document.getElementById('saved-later-items');
-    if (!savedForLater.length) {
-      savedLaterSection.style.display = 'none';
-      return;
-    }
-    savedLaterSection.style.display = 'block';
-    container.innerHTML = savedForLater.map(item => `
-      <div class="cart-line">
-        ${item.img ? `<img class="cart-line-img" src="${item.img}" alt="">` : ''}
-        <div class="cart-line-body">
-          <div class="cart-line-name">${item.name}</div>
-          <div class="cart-line-qty">${item.priceText || ''}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-          <button class="cart-line-remove move-to-list-btn" data-id="${item.id}" style="color:var(--sage);">Move to List</button>
-          <button class="cart-line-remove" data-id="${item.id}" data-remove-saved="1">Remove</button>
-        </div>
-      </div>
-    `).join('');
-    container.querySelectorAll('.move-to-list-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => moveSavedToOrderList(e.target.dataset.id));
-    });
-    container.querySelectorAll('[data-remove-saved]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        savedForLater = savedForLater.filter(i => i.id !== e.target.dataset.id);
-        saveItems(SAVED_LATER_KEY, savedForLater);
-        renderSavedForLater();
-      });
-    });
-  }
-
-  function saveForLater(id) {
-    const item = orderList.find(i => i.id === id);
-    if (!item) return;
-    orderList = orderList.filter(i => i.id !== id);
-    savedForLater = savedForLater.filter(i => i.id !== id);
-    savedForLater.push(item);
-    saveItems(ORDER_LIST_KEY, orderList);
-    saveItems(SAVED_LATER_KEY, savedForLater);
-    renderCart();
-    renderSavedForLater();
-    showToast(`${item.name} saved for later`);
-  }
-
-  function moveSavedToOrderList(id) {
-    const item = savedForLater.find(i => i.id === id);
-    if (!item) return;
-    savedForLater = savedForLater.filter(i => i.id !== id);
-    const existing = orderList.find(i => i.id === id);
-    if (existing) existing.qty = (existing.qty || 1) + (item.qty || 1);
-    else orderList.push(item);
-    saveItems(ORDER_LIST_KEY, orderList);
-    saveItems(SAVED_LATER_KEY, savedForLater);
-    renderCart();
-    renderSavedForLater();
-    showToast(`${item.name} moved back to your Custom Order List`);
-  }
-
-  function renderCartSuggestions() {
-    const grid = document.getElementById('cart-suggest-grid');
-    ensureProductsData().then(() => {
-      const all = window.KONGPOSH_PRODUCTS || [];
-      if (!all.length) { suggestSection.style.display = 'none'; return; }
-      const excludeIds = new Set([...orderList, ...savedForLater].map(i => i.id));
-      const pool = all.filter(p => !excludeIds.has(p.id));
-      if (!pool.length) { suggestSection.style.display = 'none'; return; }
-      // Simple, deterministic-ish variety: pick from spread-out points in the catalog
-      const picks = [];
-      const step = Math.max(1, Math.floor(pool.length / 3));
-      for (let i = 0; i < pool.length && picks.length < 3; i += step) picks.push(pool[i]);
-      suggestSection.style.display = 'block';
-      grid.innerHTML = picks.map(p => {
-        const img = (p.images && p.images[0]) || '';
-        return `
-          <a class="cart-suggest-item" href="product.html?id=${encodeURIComponent(p.id)}">
-            ${img ? `<img src="${img}" alt="">` : `<div class="search-result-noimg"></div>`}
-            <div class="cart-suggest-name">${p.name}</div>
-            <div class="cart-suggest-price">${p.priceText}</div>
-          </a>`;
-      }).join('');
-    }).catch(() => { suggestSection.style.display = 'none'; });
-  }
-
   function openCart() {
     cartDrawer.classList.add('open');
     cartOverlay.classList.add('open');
     cartDrawer.setAttribute('aria-hidden', 'false');
-    renderSavedForLater();
-    renderCartSuggestions();
   }
   function closeCart() {
     cartDrawer.classList.remove('open');
@@ -275,7 +162,6 @@ if (nav) nav.classList.add('visible');
     } else {
       cartEmptyEl.style.display = 'none';
       orderList.forEach((item) => {
-        const qty = item.qty || 1;
         const line = document.createElement('div');
         line.className = 'cart-line';
         line.innerHTML = `
@@ -283,65 +169,33 @@ if (nav) nav.classList.add('visible');
           <div class="cart-line-body">
             <div class="cart-line-name">${item.name}</div>
             <div class="cart-line-qty">${item.priceText || ''}${item.builderDetails ? ' · full details go in your WhatsApp message' : ''}</div>
-            ${!item.builderDetails ? `
-            <div class="cart-line-qty-stepper">
-              <button class="qty-step" data-id="${item.id}" data-dir="-1" aria-label="Decrease quantity">−</button>
-              <span class="qty-value">${qty}</span>
-              <button class="qty-step" data-id="${item.id}" data-dir="1" aria-label="Increase quantity">+</button>
-            </div>` : ''}
           </div>
-          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-            <button class="cart-line-remove save-later-btn" data-id="${item.id}" style="color:var(--sage);">Save for Later</button>
-            <button class="cart-line-remove" data-id="${item.id}">Remove</button>
-          </div>
+          <button class="cart-line-remove" data-id="${item.id}">Remove</button>
         `;
         cartItemsEl.appendChild(line);
       });
-      cartItemsEl.querySelectorAll('.qty-step').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const dir = Number(e.currentTarget.dataset.dir);
-          changeOrderListQty(e.currentTarget.dataset.id, dir);
-        });
-      });
-      cartItemsEl.querySelectorAll('.save-later-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => saveForLater(e.target.dataset.id));
-      });
-      cartItemsEl.querySelectorAll('.cart-line-remove:not(.save-later-btn)').forEach(btn => {
+      cartItemsEl.querySelectorAll('.cart-line-remove').forEach(btn => {
         btn.addEventListener('click', (e) => {
           removeFromOrderList(e.target.dataset.id);
         });
       });
     }
-    const total = orderList.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0);
-    cartTotalEl.textContent = `₹${total}`;
-    cartCountEl.textContent = orderList.reduce((sum, item) => sum + (item.qty || 1), 0);
+    const total = orderList.reduce((sum, item) => sum + (item.price || 0), 0);
+    cartTotalEl.textContent = `$${total}`;
+    cartCountEl.textContent = orderList.length;
     syncListButtons();
   }
 
-  function changeOrderListQty(id, delta) {
-    const entry = orderList.find(i => i.id === id);
-    if (!entry) return;
-    entry.qty = (entry.qty || 1) + delta;
-    if (entry.qty < 1) {
-      removeFromOrderList(id);
-      return;
-    }
-    saveItems(ORDER_LIST_KEY, orderList);
-    renderCart();
-  }
-
   function addToOrderList(item, btn) {
-    const addQty = item.qty || 1;
     const exists = orderList.find(i => i.id === item.id);
     if (exists) {
-      exists.qty = (exists.qty || 1) + addQty;
-      showToast(`${item.name} quantity updated (${exists.qty}) in your Custom Order List`);
-    } else {
-      orderList.push(Object.assign({}, item, { qty: addQty }));
-      showToast(`${item.name} added to your Custom Order List`);
+      showToast(`${item.name} is already in your Custom Order List`);
+      return;
     }
+    orderList.push(item);
     saveItems(ORDER_LIST_KEY, orderList);
     renderCart();
+    showToast(`${item.name} added to your Custom Order List`);
     if (btn) {
       btn.classList.add('added');
       const label = btn.querySelector('.btn-label');
@@ -376,9 +230,7 @@ if (nav) nav.classList.add('visible');
     }
     // TODO: replace with your real WhatsApp number (country code + number, no + or spaces)
     const lines = orderList.map((item, i) => {
-      const qty = item.qty || 1;
-      const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-      const header = `${i + 1}. ${qtyPrefix}${item.name} (${item.priceText || 'price on request'})`;
+      const header = `${i + 1}. ${item.name} (${item.priceText || 'price on request'})`;
       if (item.builderDetails && item.builderDetails.length) {
         const indented = item.builderDetails.map(l => `    - ${l}`).join('\n');
         return `${header}\n${indented}`;
@@ -398,22 +250,6 @@ if (nav) nav.classList.add('visible');
     toast.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-  }
-
-  /* ---------- Write a Review (homepage) — no backend to store/moderate
-     reviews, so this sends straight to WhatsApp instead of "posting" anything. ---------- */
-  const reviewForm = document.getElementById('write-review-form');
-  if (reviewForm) {
-    reviewForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('review-name').value.trim();
-      const rating = document.getElementById('review-rating').value;
-      const text = document.getElementById('review-text').value.trim();
-      const message = `Hi KONGPOSH! I'd like to leave a review.\n\nName: ${name}\nRating: ${rating}/5\nReview: ${text}`;
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
-      reviewForm.reset();
-      showToast('Thank you! Opening WhatsApp to send your review...');
-    });
   }
 
   /* ---------- Newsletter ---------- */
@@ -571,12 +407,6 @@ if (nav) nav.classList.add('visible');
     <div class="search-modal-head">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
       <input type="text" id="search-input" placeholder="Search embroidery, crochet, jewellery…" autocomplete="off" disabled>
-      <select id="search-sort" class="search-sort" style="display:none;">
-        <option value="relevance">Sort: Relevance</option>
-        <option value="price-asc">Price: Low to High</option>
-        <option value="price-desc">Price: High to Low</option>
-        <option value="name-asc">Name: A-Z</option>
-      </select>
       <button class="icon-btn" id="search-close" aria-label="Close search">✕</button>
     </div>
     <div class="search-results" id="search-results">
@@ -586,42 +416,6 @@ if (nav) nav.classList.add('visible');
   document.body.appendChild(searchOverlay);
   document.body.appendChild(searchModal);
 
-  /* Recent searches — localStorage, most-recent-first, capped at 5 */
-  const RECENT_SEARCHES_KEY = 'kongposh_recent_searches';
-  const POPULAR_SEARCHES = ['Crochet', 'Jewellery', 'Embroidery', 'Calligraphy', 'Nikkah Dupatta', 'Custom Gifts'];
-  function getRecentSearches() {
-    try { return JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY)) || []; } catch (e) { return []; }
-  }
-  function addRecentSearch(q) {
-    q = q.trim();
-    if (!q) return;
-    let list = getRecentSearches().filter(item => item.toLowerCase() !== q.toLowerCase());
-    list.unshift(q);
-    try { localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(list.slice(0, 5))); } catch (e) { /* storage unavailable */ }
-  }
-  function renderSearchChips() {
-    const resultsEl = document.getElementById('search-results');
-    const recent = getRecentSearches();
-    let html = '';
-    if (recent.length) {
-      html += `<div class="search-chip-group"><p class="search-chip-label">Recent Searches</p><div class="search-chips">${
-        recent.map(q => `<button type="button" class="search-chip" data-q="${q}">${q}</button>`).join('')
-      }</div></div>`;
-    }
-    html += `<div class="search-chip-group"><p class="search-chip-label">Popular Searches</p><div class="search-chips">${
-      POPULAR_SEARCHES.map(q => `<button type="button" class="search-chip" data-q="${q}">${q}</button>`).join('')
-    }</div></div>`;
-    resultsEl.innerHTML = html;
-    resultsEl.querySelectorAll('.search-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const q = chip.dataset.q;
-        document.getElementById('search-input').value = q;
-        addRecentSearch(q);
-        renderSearchResults(q);
-      });
-    });
-  }
-
   function openSearch() {
     searchOverlay.classList.add('open');
     searchModal.classList.add('open');
@@ -630,7 +424,7 @@ if (nav) nav.classList.add('visible');
     const resultsEl = document.getElementById('search-results');
     resultsEl.innerHTML = '<p class="cart-empty">Loading designs…</p>';
     ensureProductsData().then(() => {
-      renderSearchChips();
+      resultsEl.innerHTML = '<p class="cart-empty">Start typing to search every design across KONGPOSH.</p>';
       input.disabled = false;
       input.focus();
     }).catch(() => {
@@ -644,31 +438,22 @@ if (nav) nav.classList.add('visible');
   }
   function renderSearchResults(query) {
     const resultsEl = document.getElementById('search-results');
-    const sortSel = document.getElementById('search-sort');
     const products = window.KONGPOSH_PRODUCTS || [];
     if (!query.trim()) {
-      sortSel.style.display = 'none';
-      renderSearchChips();
+      resultsEl.innerHTML = '<p class="cart-empty">Start typing to search every design across KONGPOSH.</p>';
       return;
     }
     const q = query.trim().toLowerCase();
-    let matches = products.filter(p =>
+    const matches = products.filter(p =>
       p.name.toLowerCase().includes(q) ||
       p.type.toLowerCase().includes(q) ||
       p.pageLabel.toLowerCase().includes(q) ||
       (p.category || '').toLowerCase().includes(q)
-    );
+    ).slice(0, 12);
     if (!matches.length) {
-      sortSel.style.display = 'none';
       resultsEl.innerHTML = `<p class="cart-empty">No designs matched "${query}" — try a category name like "crochet" or "jhumka".</p>`;
       return;
     }
-    sortSel.style.display = 'block';
-    const sortVal = sortSel.value;
-    if (sortVal === 'price-asc') matches = matches.slice().sort((a, b) => (a.price || 0) - (b.price || 0));
-    else if (sortVal === 'price-desc') matches = matches.slice().sort((a, b) => (b.price || 0) - (a.price || 0));
-    else if (sortVal === 'name-asc') matches = matches.slice().sort((a, b) => a.name.localeCompare(b.name));
-    matches = matches.slice(0, 12);
     resultsEl.innerHTML = matches.map(p => {
       const img = (p.images && p.images[0]) || '';
       return `
@@ -684,21 +469,10 @@ if (nav) nav.classList.add('visible');
 
   const searchToggleBtn = document.querySelector('.icon-btn[aria-label="Search"]');
   if (searchToggleBtn) {
-    let searchDebounceTimer = null;
     searchToggleBtn.addEventListener('click', openSearch);
     searchOverlay.addEventListener('click', closeSearch);
     searchModal.querySelector('#search-close').addEventListener('click', closeSearch);
-    searchModal.querySelector('#search-input').addEventListener('input', (e) => {
-      const val = e.target.value;
-      renderSearchResults(val);
-      clearTimeout(searchDebounceTimer);
-      if (val.trim().length >= 2) {
-        searchDebounceTimer = setTimeout(() => addRecentSearch(val.trim()), 700);
-      }
-    });
-    searchModal.querySelector('#search-sort').addEventListener('change', () => {
-      renderSearchResults(searchModal.querySelector('#search-input').value);
-    });
+    searchModal.querySelector('#search-input').addEventListener('input', (e) => renderSearchResults(e.target.value));
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeSearch();
       // Quick keyboard shortcut: "/" opens search, unless typing in a field already
@@ -921,48 +695,6 @@ if (nav) nav.classList.add('visible');
     if (filterTabsEl) mainCol.appendChild(filterTabsEl);
     mainCol.appendChild(productGrid);
 
-    /* ---- Pagination ("Load More") — only kicks in when a grid has more than
-       PAGE_SIZE cards, and steps aside whenever a filter (tab or sidebar) is
-       active so filtered results are never artificially truncated. ---- */
-    const PAGE_SIZE = 8;
-    const allCardsArr = Array.from(productGrid.querySelectorAll('.product-card'));
-    let loadMoreBtn = null;
-
-    function applyPagination() {
-      if (allCardsArr.length <= PAGE_SIZE) return;
-      allCardsArr.forEach((card, i) => card.classList.toggle('page-hidden', i >= PAGE_SIZE));
-      if (!loadMoreBtn) {
-        loadMoreBtn = document.createElement('button');
-        loadMoreBtn.type = 'button';
-        loadMoreBtn.className = 'btn btn-ghost load-more-btn';
-        loadMoreBtn.addEventListener('click', () => {
-          const hidden = productGrid.querySelectorAll('.page-hidden');
-          Array.from(hidden).slice(0, PAGE_SIZE).forEach(c => c.classList.remove('page-hidden'));
-          const remaining = productGrid.querySelectorAll('.page-hidden').length;
-          if (remaining > 0) loadMoreBtn.textContent = `Load More (${remaining} left)`;
-          else loadMoreBtn.style.display = 'none';
-        });
-        mainCol.appendChild(loadMoreBtn);
-      }
-      const remaining = allCardsArr.length - PAGE_SIZE;
-      loadMoreBtn.style.display = '';
-      loadMoreBtn.textContent = `Load More (${remaining} left)`;
-    }
-    function clearPagination() {
-      allCardsArr.forEach(card => card.classList.remove('page-hidden'));
-      if (loadMoreBtn) loadMoreBtn.style.display = 'none';
-    }
-    applyPagination();
-
-    if (filterTabsEl) {
-      filterTabsEl.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          if (tab.dataset.filter === 'all') applyPagination();
-          else clearPagination();
-        });
-      });
-    }
-
     const aside = document.createElement('aside');
     aside.className = 'filter-sidebar';
     aside.innerHTML = `
@@ -1026,16 +758,6 @@ if (nav) nav.classList.add('visible');
     } else {
       ensureProductsData().then(populateSidebar).catch(() => { /* sidebar simply stays empty */ });
     }
-
-    // Delegated listener fires after each button's own click handler (since it
-    // reaches `aside` during the bubble phase), so `.active` state is already
-    // updated by the time we check it here.
-    aside.addEventListener('click', (e) => {
-      if (e.target.closest('.filter-sidebar-item') || e.target.closest('.filter-sidebar-clear')) {
-        const anyActive = aside.querySelector('.filter-sidebar-item.active');
-        if (anyActive) clearPagination(); else applyPagination();
-      }
-    });
 
     /* ---- Related categories ---- */
     const relatedSection = document.createElement('section');
@@ -1192,14 +914,23 @@ function goToSlide(sliderId, targetIdx) {
    Polish: image lazy-load + skeleton, click-to-zoom lightbox, button ripple
 ========================================================= */
 
-/* Lazy-load + shimmer skeleton for product/gallery images. Hero/logo images
-   are left alone so above-the-fold content still loads immediately. */
+/* Lazy-load + shimmer skeleton for product/gallery images.
+   IMPORTANT: hero/focal images (the main product photo in .pd-main-img and the
+   main quick-view photo in .qv-main-img) are always visible the instant the
+   page/modal opens — they must load EAGERLY. Native loading="lazy" defers the
+   fetch until the browser's viewport check clears, and that check is evaluated
+   at the moment product-page.js assigns the real `src` (after this script has
+   already tagged the <img> as lazy) — on many browsers this means the image,
+   and therefore Tap to Zoom, doesn't actually load until a scroll forces a
+   re-check. So hero images get the skeleton shimmer only, never `loading`. */
 (function setupImageLazyAndSkeleton() {
-  const targets = document.querySelectorAll(
-    '.card-media img, .banner-img img, .related-cat-card img, .pd-main-img img, .pd-thumbs img, .story-visual img, .qv-main-img img'
-  );
-  targets.forEach(img => {
-    if (!img.hasAttribute('loading')) img.loading = 'lazy';
+  const HERO_SELECTOR = '.pd-main-img img, .qv-main-img img';
+  const LAZY_SELECTOR = '.card-media img, .banner-img img, .related-cat-card img, .pd-thumbs img, .story-visual img';
+
+  function bindSkeleton(img, { lazy }) {
+    if (img.dataset.skeletonBound) return;
+    img.dataset.skeletonBound = '1';
+    if (lazy && !img.hasAttribute('loading')) img.loading = 'lazy';
     const wrap = img.closest('.card-media, .banner-img, .related-cat-card, .pd-main-img, .story-visual, .qv-main-img') || img.parentElement;
     if (wrap && !wrap.classList.contains('img-skeleton-wrap')) wrap.classList.add('img-skeleton-wrap');
     const markLoaded = () => {
@@ -1211,25 +942,25 @@ function goToSlide(sliderId, targetIdx) {
       img.addEventListener('load', markLoaded);
       img.addEventListener('error', markLoaded);
     }
-  });
+  }
+
+  document.querySelectorAll(HERO_SELECTOR).forEach(img => bindSkeleton(img, { lazy: false }));
+  document.querySelectorAll(LAZY_SELECTOR).forEach(img => bindSkeleton(img, { lazy: true }));
 
   // Product cards / gallery images get injected dynamically after this runs
-  // (wishlist buttons, quick view, category extras) — catch those too via a
-  // lightweight observer so newly-added <img>s still get lazy+skeleton treatment.
+  // (wishlist buttons, quick view, category extras, product-page.js) — catch
+  // those too via a lightweight observer so newly-added <img>s still get the
+  // right treatment, with hero images always kept eager.
   const mo = new MutationObserver((mutations) => {
     mutations.forEach(m => {
       m.addedNodes.forEach(node => {
         if (node.nodeType !== 1) return;
-        const imgs = node.matches && node.matches('img') ? [node] : (node.querySelectorAll ? Array.from(node.querySelectorAll('img')) : []);
+        const isHero = node.matches && node.matches(HERO_SELECTOR);
+        const isLazy = node.matches && node.matches(LAZY_SELECTOR);
+        const imgs = (isHero || isLazy) ? [node] : (node.querySelectorAll ? Array.from(node.querySelectorAll('img')) : []);
         imgs.forEach(img => {
-          if (img.dataset.skeletonBound) return;
-          img.dataset.skeletonBound = '1';
-          if (!img.hasAttribute('loading')) img.loading = 'lazy';
-          const wrap = img.parentElement;
-          if (wrap) wrap.classList.add('img-skeleton-wrap');
-          const markLoaded = () => { img.classList.add('img-loaded'); if (wrap) wrap.classList.add('img-ready'); };
-          if (img.complete && img.naturalWidth > 0) markLoaded();
-          else { img.addEventListener('load', markLoaded); img.addEventListener('error', markLoaded); }
+          const hero = img.matches(HERO_SELECTOR);
+          bindSkeleton(img, { lazy: !hero });
         });
       });
     });
