@@ -1,5 +1,5 @@
 /* =========================================================
-   product.html renderer
+   product.html renderer with enhanced pricing display
    Runs after script.js (which already wired header/drawers,
    wishlist/order-list logic, and exposed window.KP for reuse).
    Reads ?id= from the URL and renders the matching product
@@ -68,10 +68,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ---------- Info ---------- */
+  /* ---------- Info with Enhanced Pricing ---------- */
   document.getElementById('pd-type').textContent = product.type;
   document.getElementById('pd-name').textContent = product.name;
-  document.getElementById('pd-price').textContent = product.priceText;
+  
+  // Display starting price prominently
+  const priceEl = document.getElementById('pd-price');
+  const priceDisplay = document.createElement('div');
+  priceDisplay.style.marginBottom = '4px';
+  priceDisplay.innerHTML = `
+    <div style="font-size: 0.85rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Starting Price</div>
+    <div style="font-size: 1.4rem; font-weight: 700; color: var(--ink);">${product.priceText}</div>
+  `;
+  priceEl.innerHTML = '';
+  priceEl.appendChild(priceDisplay);
+  
+  // Add price range note if available
+  if (product.priceRange) {
+    const rangeNote = document.createElement('p');
+    rangeNote.style.fontSize = '0.88rem';
+    rangeNote.style.color = 'var(--ink-soft)';
+    rangeNote.style.marginTop = '6px';
+    rangeNote.innerHTML = `<strong>Price Range:</strong> ${product.priceRange}<br><em>Varies by size, materials, and customization options</em>`;
+    priceEl.appendChild(rangeNote);
+  }
+  
   document.getElementById('pd-desc').textContent = product.desc || '';
 
   const categoryPage = product.page;
@@ -152,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function buyNowMessage() {
     const qty = getQty();
     const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-    return `Hi KONGPOSH! I'd like to order:\n\n${qtyPrefix}${product.name} (${product.priceText})\n\nPlease let me know the next steps.`;
+    return `Hi KONGPOSH! I'd like to order:\n\n${qtyPrefix}${product.name}\nStarting from ${product.priceText}\n\nPlease let me know the next steps and final pricing based on my customization.`;
   }
   function openBuyNow() {
     const number = (window.KP && window.KP.WHATSAPP_NUMBER) || '919103830394';
